@@ -1,47 +1,34 @@
-# 🚀 Electron React TypeScript Tailwind Starter
+## Youtube Player
 
-This starter repository provides a ready-to-use project template for building cross-platform desktop applications with Electron, React, TypeScript, and Tailwind CSS, utilizing Electron Forge for easy packaging and publishing.
+Desktop application that uses youtube-dl to download and play playlists/videos.
 
-## Features
-- Electron for building cross-platform desktop applications
-- React for creating scalable, component-based UIs
-- TypeScript for strongly-typed and maintainable JavaScript code
-- Tailwind CSS for utility-first styling and rapid UI development
-- Electron Forge for simple packaging and publishing of Electron applications
+Note: code currently still contains old music player code that will be replaced to MPD controls in the future.
+Some buttons might not work
+
+Features:
+  - [x] Download playlists from youtube
+  - [ ] MPD Controls
+    - [x] Play playlists to MPD server
+    - [x] Toggle random
+    - [ ] Show active playing music
+    - [ ] Toggle repeat
+    - [ ] Create playlists
+    - [ ] Display duration/location of music
+    - [ ] Seek
+    - [ ] Play next queued music
+    - [x] Queue / Play a selected music
+    - [ ] Play / Pause
+    - [ ] Set volume
 
 
-## Getting Started
-Clone the repository:
-```bash
-git clone https://github.com/yourusername/electron-react-typescript-tailwind-starter.git
-```
+### Install
 
-Navigate to the project folder:
-```bash
-cd electron-react-typescript-tailwind-starter
-```
+Youtube-dl is required for this application to work
 
-Install dependencies:
-```bash
-npm install
-```
+`pip install youtube-dl`
 
-Start the development server:
-```bash
-npm run start
-```
+MPD server and MPC command is required to play the music
 
-# Package the project
+Download latest [release](https://github.com/myin142/yt-player/releases)
 
-Package the project as an Electron app:
-
-```bash
-npm run make
-```
-
-For detailed configuration visit: https://www.electronforge.io
-
-## Customization
-
-You can easily customize the project to suit your needs by modifying the source code within the `src` directory. The project is set up with a simple example that you can use as a starting point for your application.
-
+![Preview](preview.png)
