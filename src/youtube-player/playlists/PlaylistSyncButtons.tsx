@@ -1,5 +1,3 @@
-import { IconButton, Dialog, DialogContent, TextField, Tooltip, Button, DialogActions, DialogTitle } from "@material-ui/core";
-import { CloudDownload, CloudUpload } from '@material-ui/icons';
 import React, { useContext, useState } from "react";
 import { PlaylistService } from "./PlaylistService";
 import { PlaylistContext } from "./PlaylistContext";
@@ -52,7 +50,7 @@ export function PlaylistSyncButtons() {
 
   return (
     <>
-      <Tooltip title="Download cloud playlists">
+      {/* <Tooltip title="Download cloud playlists">
         <IconButton size="small"
           aria-label="download"
           onClick={() => doCloudDownload()}>
@@ -76,7 +74,7 @@ export function PlaylistSyncButtons() {
           onClick={() => doCloudUpload()}>
           <CloudUpload />
         </IconButton>
-      </Tooltip>
+      </Tooltip> */}
     </>
   );
 }

@@ -1,12 +1,11 @@
-import { Tooltip, IconButton } from '@material-ui/core';
-import { Sync, Edit } from '@material-ui/icons';
-import { cloneDeep } from 'lodash';
-import React from 'react';
-import FlexBox from '../components/FlexBox';
-import IconToggle from '../components/IconToggle';
-import PlaylistVideos from './playlists/PlaylistVideos';
-import { Searchbar } from './Searchbar';
-import { PlaylistInfo, PlaylistVideo } from './types';
+import { cloneDeep } from "lodash";
+import { FaEdit, FaSync } from "react-icons/fa";
+import React from "react";
+import FlexBox from "../components/FlexBox";
+import IconToggle from "../components/IconToggle";
+import PlaylistVideos from "./playlists/PlaylistVideos";
+import { Searchbar } from "./Searchbar";
+import { PlaylistInfo, PlaylistVideo } from "./types";
 
 interface MainPanelProps {
   selectedPlaylist: PlaylistInfo;
@@ -69,11 +68,7 @@ export class MainPanel extends React.Component<MainPanelProps, MainPanelState> {
   }
 
   render() {
-    const {
-      selectedPlaylist,
-      onReload,
-      onPlay,
-    } = this.props;
+    const { selectedPlaylist, onReload, onPlay } = this.props;
     const { editPlaylist } = this.state;
     const editMode = !!editPlaylist;
 
@@ -81,24 +76,25 @@ export class MainPanel extends React.Component<MainPanelProps, MainPanelState> {
       <>
         <div
           className="flex-horizontal main-padding"
-          style={{ justifyContent: 'space-between' }}
+          style={{ justifyContent: "space-between" }}
         >
           <Searchbar />
 
-          <FlexBox flexShrink={1}>
+          <FlexBox classes="shrink">
             {selectedPlaylist && (
               <>
-                <Tooltip title="Reload playlist videos">
-                  <IconButton onClick={() => onReload()}>
-                    <Sync />
-                  </IconButton>
-                </Tooltip>
+                <IconToggle
+                  title="Reload playlist videos"
+                  onClick={() => onReload()}
+                >
+                  <FaSync />
+                </IconToggle>
                 <IconToggle
                   active={editMode}
                   onClick={() => this.toggleEdit()}
                   title="Edit playlist videos"
                 >
-                  <Edit />
+                  <FaEdit />
                 </IconToggle>
               </>
             )}

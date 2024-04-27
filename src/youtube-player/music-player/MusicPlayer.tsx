@@ -1,18 +1,18 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-return-assign */
-import React, { RefObject, useContext, useEffect, useRef, useState } from 'react';
-import { Pause, PlayArrow, SkipNext, Shuffle } from '@material-ui/icons';
-import { Divider, IconButton } from '@material-ui/core';
-import ReactHowler from 'react-howler';
-import { clamp } from 'lodash';
-import FlexBox from '../../components/FlexBox';
-import { PlaylistVideo } from '../types';
-import { MusicQueue } from './music-queue';
-import { VolumeControls } from './VolumeControls';
-import IconToggle from '../../components/IconToggle';
-import { VideoService } from '../youtube/VideoService';
-import { YoutubeContext } from '../youtube/YoutubeContext';
-import { PlaybackTime } from './PlaybackTime';
-import { Status } from '../../services/mpd.service';
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { FaPause, FaPlay, FaArrowRight, FaShuffle } from "react-icons/fa6";
+import ReactHowler from "react-howler";
+import { clamp } from "lodash";
+import FlexBox from "../../components/FlexBox";
+import { PlaylistVideo } from "../types";
+import { MusicQueue } from "./music-queue";
+import { VolumeControls } from "./VolumeControls";
+import IconToggle from "../../components/IconToggle";
+import { VideoService } from "../youtube/VideoService";
+import { YoutubeContext } from "../youtube/YoutubeContext";
+import { PlaybackTime } from "./PlaybackTime";
+import { Status } from "../../services/mpd.service";
 
 export interface MusicPlayerProps {
   queue: number[];
@@ -45,7 +45,15 @@ const outerState = {
 };
 
 export function MusicPlayer(props: MusicPlayerProps) {
-  const { dirtyQueue, onQueueChanged, onVideoPlay, playingVideo, playingVideos, queue, videoChanged } = props;
+  const {
+    dirtyQueue,
+    onQueueChanged,
+    onVideoPlay,
+    playingVideo,
+    playingVideos,
+    queue,
+    videoChanged,
+  } = props;
   const [isPlaying, setIsPlaying] = useState(false);
   const [songDuration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.2);
@@ -60,7 +68,7 @@ export function MusicPlayer(props: MusicPlayerProps) {
 
   const getCurrentIndex = (): number => {
     return playingVideos.findIndex((v) => v.id === playingVideo?.id);
-  }
+  };
 
   const fillQueue = (q: number[] = [], random = false) => {
     const currentQueue = [...q];
@@ -89,7 +97,7 @@ export function MusicPlayer(props: MusicPlayerProps) {
     }
 
     onQueueChanged(resultQueue);
-  }
+  };
 
   const playNextVideo = () => {
     if (playingVideos.length === 0) return;
@@ -99,11 +107,11 @@ export function MusicPlayer(props: MusicPlayerProps) {
       onVideoPlay(vid);
       fillQueue(queue);
     }
-  }
+  };
 
   const setVolumeClamp = (vol: number) => {
     setVolume(clamp(vol, 0, 1));
-  }
+  };
 
   // const toggleRandom = () => {
   //   setIsRandom(!isRandom);
@@ -115,17 +123,17 @@ export function MusicPlayer(props: MusicPlayerProps) {
       player.current?.seek(0);
       setIsPlaying(true);
     } else {
-      console.warn('Cannot play not downloaded video');
+      console.warn("Cannot play not downloaded video");
     }
-  }
+  };
 
   const resume = () => {
     setIsPlaying(true);
-  }
+  };
 
   const pause = () => {
     setIsPlaying(false);
-  }
+  };
 
   function toggleMusic() {
     if (playingVideo == null) {
@@ -133,17 +141,17 @@ export function MusicPlayer(props: MusicPlayerProps) {
     }
 
     if (outerState.isPlaying) {
-      console.log('Pause');
+      console.log("Pause");
       pause();
     } else {
-      console.log('Resume');
+      console.log("Resume");
       resume();
     }
   }
 
   const setSongDuration = () => {
     setDuration(player.current?.duration() || 0);
-  }
+  };
 
   const seek = (value: number) => {
     if (isPlaying) {
@@ -151,42 +159,41 @@ export function MusicPlayer(props: MusicPlayerProps) {
       setWasPlaying(true);
     }
     player.current?.seek(value);
-  }
+  };
 
   const onSeekEnd = () => {
     if (wasPlaying) {
       resume();
     }
-  }
+  };
 
   useEffect(() => {
     const keybindings: { [k: string]: () => void } = {
-      ' ': () => toggleMusic(),
+      " ": () => toggleMusic(),
       ArrowDown: () => setVolumeClamp(volume - VOLUME_STEPS),
       ArrowUp: () => setVolumeClamp(volume + VOLUME_STEPS),
       ArrowRight: () => playNextVideo(),
     };
 
     const handleKeyDown = (ev: KeyboardEvent) => {
-      const preventEvent = ['INPUT'];
-      if (preventEvent.includes(document.activeElement?.tagName || '')) {
+      const preventEvent = ["INPUT"];
+      if (preventEvent.includes(document.activeElement?.tagName || "")) {
         return;
       }
-
 
       const fn = keybindings[ev.key];
       if (fn) {
         ev.preventDefault();
         fn();
       }
-    }
+    };
 
-    document.removeEventListener('keydown', handleKeyDown);
-    document.addEventListener('keydown', handleKeyDown);
+    document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
     play();
     fillQueue([]);
 
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   useEffect(() => {
@@ -209,12 +216,7 @@ export function MusicPlayer(props: MusicPlayerProps) {
   // const v = volume * 1.2;
 
   return (
-    <FlexBox
-      flexDirection="row"
-      flexGrow={1}
-      style={{ gap: '3em' }}
-      paddingX="2em"
-    >
+    <FlexBox classes="!flex-row grow gap-2 px">
       {/* {playingFile && (
         <ReactHowler
           src={playingFile}
@@ -228,25 +230,26 @@ export function MusicPlayer(props: MusicPlayerProps) {
       <div className="controls flex-vertical">
         <FlexBox>
           {(isPlaying && (
-            <IconButton onClick={() => pause()}>
-              <Pause />
-            </IconButton>
+            <button onClick={() => pause()}>
+              <FaPause />
+            </button>
           )) || (
-              <IconButton onClick={() => resume()}>
-                <PlayArrow />
-              </IconButton>
-            )}
-          <IconButton onClick={() => playNextVideo()}>
-            <SkipNext />
-          </IconButton>
+            <button onClick={() => resume()}>
+              <FaPlay />
+            </button>
+          )}
+          <button onClick={() => playNextVideo()}>
+            <FaArrowRight />
+          </button>
 
-          <Divider orientation="vertical" flexItem />
+          <div className="border-l"></div>
+
           <IconToggle
             active={props.status.random}
             onClick={() => props.toggleRandom()}
             title="Shuffle"
           >
-            <Shuffle />
+            <FaShuffle />
           </IconToggle>
         </FlexBox>
       </div>

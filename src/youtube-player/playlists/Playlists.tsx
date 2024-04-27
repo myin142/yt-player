@@ -1,11 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Add, Close } from '@material-ui/icons';
-import { Snackbar, IconButton, Tooltip } from '@material-ui/core';
-import { PlaylistInfo } from '../types';
-import InputField from '../../components/InputField';
-import { PlaylistSyncButtons } from './PlaylistSyncButtons';
-import { PlaylistContext } from './PlaylistContext';
-import { YoutubeContext } from '../youtube/YoutubeContext';
+import React, { useContext, useEffect, useState } from "react";
+import { FaPlus, FaX } from "react-icons/fa6";
+import { PlaylistInfo } from "../types";
+import { PlaylistSyncButtons } from "./PlaylistSyncButtons";
+import { PlaylistContext } from "./PlaylistContext";
+import { YoutubeContext } from "../youtube/YoutubeContext";
 
 export interface PlaylistsProps {
   selectedPlaylist: PlaylistInfo | null;
@@ -20,21 +18,24 @@ export interface PlaylistsState {
   creating: boolean;
 }
 
-export function Playlists({ selectedPlaylist, onPlaylistSelected }: PlaylistsProps) {
+export function Playlists({
+  selectedPlaylist,
+  onPlaylistSelected,
+}: PlaylistsProps) {
   const { service: ytService } = useContext(YoutubeContext);
   const { service } = useContext(PlaylistContext);
   const [playlists, setPlaylists] = useState([] as PlaylistInfo[]);
-  const [createPlaylistError, setCreatePlaylistError] = useState('');
-  const [createPlaylistId, setCreatePlaylistId] = useState('');
+  const [createPlaylistError, setCreatePlaylistError] = useState("");
+  const [createPlaylistId, setCreatePlaylistId] = useState("");
   const [showCreatePlaylist, setShowCreatePlaylist] = useState(false);
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     service.loadPlaylists();
-    service.addListener('playlistUpdated', p => {
+    service.addListener("playlistUpdated", (p) => {
       setPlaylists(p);
-      setCreatePlaylistError('');
-      setCreatePlaylistId('');
+      setCreatePlaylistError("");
+      setCreatePlaylistId("");
       setShowCreatePlaylist(false);
       setCreating(false);
     });
@@ -44,12 +45,9 @@ export function Playlists({ selectedPlaylist, onPlaylistSelected }: PlaylistsPro
     };
   }, []);
 
-
   const createPlaylist = async () => {
-    if (
-      playlists.find((p) => p.playlistId === createPlaylistId) != null
-    ) {
-      setCreatePlaylistError('Playlist Id is already added')
+    if (playlists.find((p) => p.playlistId === createPlaylistId) != null) {
+      setCreatePlaylistError("Playlist Id is already added");
       return;
     }
 
@@ -65,13 +63,13 @@ export function Playlists({ selectedPlaylist, onPlaylistSelected }: PlaylistsPro
       service.updatePlaylist({
         playlistId: createPlaylistId,
         title: info?.title,
-        videos: info.entries.map(i => ({ id: i.id, title: i.title })) // Entries contain more information
+        videos: info.entries.map((i) => ({ id: i.id, title: i.title })), // Entries contain more information
       });
     } else {
       setCreating(false);
-      setCreatePlaylistError('Failed to get playlist info')
+      setCreatePlaylistError("Failed to get playlist info");
     }
-  }
+  };
 
   const playlistsList = playlists.map((p, i) => {
     return (
@@ -83,62 +81,61 @@ export function Playlists({ selectedPlaylist, onPlaylistSelected }: PlaylistsPro
           onKeyPress={() => onPlaylistSelected(p)}
           style={
             selectedPlaylist?.playlistId === p.playlistId
-              ? { fontWeight: 'bold' }
+              ? { fontWeight: "bold" }
               : {}
           }
         >
-          {p.title || 'Not a playlist'}
+          {p.title || "Not a playlist"}
         </button>
       </li>
     );
   });
 
-
   return (
-    <div className="flex-vertical" style={{ gap: '1em' }}>
+    <div className="flex-vertical" style={{ gap: "1em" }}>
       <div className="flex-horizontal">
-        <Tooltip title="Add youtube playlist">
-          <IconButton size="small"
-            aria-label="add"
-            onClick={() => setShowCreatePlaylist(!showCreatePlaylist)}>
-            <Add />
-          </IconButton>
-        </Tooltip>
+        <button
+          title="Add youtube playlist"
+          aria-label="add"
+          onClick={() => setShowCreatePlaylist(!showCreatePlaylist)}
+        >
+          <FaPlus />
+        </button>
         <PlaylistSyncButtons />
       </div>
 
-      <Snackbar
-        open={!!createPlaylistError}
-        autoHideDuration={3000}
-        onClose={() => setCreatePlaylistError('')}
-        message={createPlaylistError}
-        action={
-          <IconButton
-            size="small"
+      {createPlaylistError && (
+        <div
+        // autoHideDuration={3000}
+        // onClose={() => setCreatePlaylistError("")}
+        >
+          <span>{createPlaylistError}</span>
+          <button
             aria-label="close"
             color="inherit"
-            onClick={() => setCreatePlaylistError('')}
+            onClick={() => setCreatePlaylistError("")}
           >
-            <Close fontSize="small" />
-          </IconButton>
-        }
-      />
+            <FaX size="small" />
+          </button>
+        </div>
+      )}
       {showCreatePlaylist && (
-        <div className="flex-horizontal" style={{ gap: '0.5em' }}>
-          <InputField
-            style={{ background: '#3f3f3f' }}
+        <div className="flex-horizontal" style={{ gap: "0.5em" }}>
+          <input
+            className="px py-2 w-full rounded bg-slate-600"
+            style={{ background: "#3f3f3f" }}
             value={createPlaylistId}
             onChange={(e) => setCreatePlaylistId(e.target.value)}
           />
           <button
             className="btn-2"
-            style={{ flexShrink: 1, width: 'unset' }}
+            style={{ flexShrink: 1, width: "unset" }}
             type="button"
             disabled={creating}
             onClick={() => createPlaylist()}
           >
             Create
-            </button>
+          </button>
         </div>
       )}
       <ul>{playlistsList}</ul>

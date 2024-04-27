@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  VolumeDown,
-  VolumeMute,
-  VolumeOff,
-  VolumeUp,
-} from '@material-ui/icons';
-import { IconButton } from '@material-ui/core';
-import FlexBox from '../../components/FlexBox';
-import YtSlider from '../../components/YtSlider';
+  FaVolumeHigh,
+  FaVolumeOff,
+  FaVolumeXmark,
+  FaVolumeLow,
+} from "react-icons/fa6";
+import FlexBox from "../../components/FlexBox";
 
 export interface VolumeControlsProps {
   volume: number;
@@ -21,10 +19,12 @@ export interface VolumeControlsState {
 
 const MAX_VOLUME = 100;
 
-export function VolumeControls({ volume, onVolumeChange }: VolumeControlsProps) {
+export function VolumeControls({
+  volume,
+  onVolumeChange,
+}: VolumeControlsProps) {
   const [muted, setMuted] = useState(false);
   const [mutedVolume, setMutedVolume] = useState(0);
-
 
   const fromNormalizedVolume = (vol: number) => {
     return vol * MAX_VOLUME;
@@ -43,7 +43,7 @@ export function VolumeControls({ volume, onVolumeChange }: VolumeControlsProps) 
     if (!Array.isArray(v)) {
       emitNormalizedVolume(v);
     } else {
-      console.warn('Volume not a number', v);
+      console.warn("Volume not a number", v);
     }
   };
 
@@ -59,43 +59,40 @@ export function VolumeControls({ volume, onVolumeChange }: VolumeControlsProps) 
     setMutedVolume(0);
   };
 
-
   let volumeIcon = (
-    <IconButton onClick={() => mute()}>
-      <VolumeUp />
-    </IconButton>
+    <button onClick={() => mute()}>
+      <FaVolumeHigh />
+    </button>
   );
 
   if (muted) {
     volumeIcon = (
-      <IconButton onClick={() => unmute()}>
-        <VolumeMute />
-      </IconButton>
+      <button onClick={() => unmute()}>
+        <FaVolumeXmark />
+      </button>
     );
   } else if (volume === 0) {
     volumeIcon = (
-      <IconButton
-        onClick={() => emitNormalizedVolume(MAX_VOLUME)}
-      >
-        <VolumeOff />
-      </IconButton>
+      <button onClick={() => emitNormalizedVolume(MAX_VOLUME)}>
+        <FaVolumeOff />
+      </button>
     );
   } else if (volume < 0.5) {
     volumeIcon = (
-      <IconButton onClick={() => mute()}>
-        <VolumeDown />
-      </IconButton>
+      <button onClick={() => mute()}>
+        <FaVolumeLow />
+      </button>
     );
   }
 
   return (
-    <FlexBox flexDirection="row">
+    <FlexBox classes="!flex-row">
       {volumeIcon}
-      <YtSlider
+      <input type="range"
         value={fromNormalizedVolume(volume)}
         min={0}
         max={100}
-        onChange={(e, v) => onVolumeSliderChange(v)}
+        onChange={(e) => onVolumeSliderChange(e.target.valueAsNumber)}
       />
     </FlexBox>
   );

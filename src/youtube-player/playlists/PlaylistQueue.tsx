@@ -1,16 +1,6 @@
-import {
-  createStyles,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  Theme,
-  Typography,
-} from '@material-ui/core';
-import { VolumeUp } from '@material-ui/icons';
-import React from 'react';
-import { PlaylistVideo } from '../types';
+import { FaVolumeHigh } from "react-icons/fa6";
+import React from "react";
+import { PlaylistVideo } from "../types";
 
 interface PlaylistQueueProps {
   playingVideo: PlaylistVideo;
@@ -18,25 +8,25 @@ interface PlaylistQueueProps {
   queue: number[];
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    iconItem: {
-      minWidth: 0,
-      position: 'relative',
-      left: '-0.5em',
-    },
-    icon: {
-      color: theme.palette.secondary.main,
-    },
-  })
-);
+// const useStyles = makeStyles((theme: Theme) =>
+//   createStyles({
+//     iconItem: {
+//       minWidth: 0,
+//       position: 'relative',
+//       left: '-0.5em',
+//     },
+//     icon: {
+//       color: theme.palette.secondary.main,
+//     },
+//   })
+// );
 
 export default function PlaylistQueue({
   playingVideo,
   queue,
   videos,
 }: PlaylistQueueProps) {
-  const styles = useStyles();
+  // const styles = useStyles();
   const currentIndex = videos.findIndex((v) => v.id === playingVideo.id);
 
   const nextQueue = [...queue];
@@ -49,14 +39,10 @@ export default function PlaylistQueue({
     .map((v, i) => {
       return (
         <>
-          <ListItem key={i} style={{ borderBottom: '.2em solid #3f3f3f' }}>
-            {i === 0 && (
-              <ListItemIcon className={styles.iconItem}>
-                <VolumeUp className={styles.icon} />
-              </ListItemIcon>
-            )}
-            <ListItemText>{videos[v].title}</ListItemText>
-          </ListItem>
+          <li key={i} className="border-b">
+            {i === 0 && <FaVolumeHigh />}
+            <span>{videos[v].title}</span>
+          </li>
         </>
       );
     });
@@ -65,10 +51,8 @@ export default function PlaylistQueue({
     <>
       {queueItems.length > 0 && (
         <div>
-          <Typography variant="h5" gutterBottom>
-            Queue
-          </Typography>
-          <List dense>{queueItems}</List>
+          <div className="font-bold border-b">Queue</div>
+          <ul>{queueItems}</ul>
         </div>
       )}
     </>

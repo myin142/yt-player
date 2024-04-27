@@ -1,5 +1,4 @@
 import React from 'react';
-import { RouteProps } from 'react-router-dom';
 import { MusicPlayer } from './music-player/MusicPlayer';
 import PlaylistQueue from './playlists/PlaylistQueue';
 import { Playlists } from './playlists/Playlists';
@@ -29,7 +28,6 @@ class YoutubePlayerPage extends React.Component<
   YoutubePlayerPageState
   > {
 
-  // eslint-disable-next-line react/static-property-placement
   static contextType = PlaylistContext;
 
   private readonly youtubeService = new LocalYoutubeDlService();
@@ -197,7 +195,7 @@ class YoutubePlayerPage extends React.Component<
 
     return (
       <>
-        {/* <div className="container">
+        <div className="container">
           <nav className="side-panel">
             <div className="panel scroll">
               <Playlists
@@ -234,8 +232,8 @@ class YoutubePlayerPage extends React.Component<
               </div>
             </aside>
           )}
-        </div> */}
-        {/* {status && (
+        </div>
+        {status && (
           <footer className="panel">
             <MusicPlayer
               status={status}
@@ -253,7 +251,7 @@ class YoutubePlayerPage extends React.Component<
               onQueueChanged={(q) => this.setState({ queue: q })}
             />
           </footer>
-        )} */}
+        )}
       </>
     );
   }

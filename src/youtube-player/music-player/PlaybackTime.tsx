@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import FlexBox from '../../components/FlexBox';
-import YtSlider from '../../components/YtSlider';
+import React, { useEffect, useState } from "react";
+import FlexBox from "../../components/FlexBox";
 
 export interface PlaybackControlsProps {
   isPlaying: boolean;
@@ -16,11 +15,17 @@ export interface PlaybackControlsState {
   seeking: boolean;
 }
 
-export function PlaybackTime({ isPlaying, currentTimeFn, duration, onSeek, onSeekEnd }: PlaybackControlsProps) {
+export function PlaybackTime({
+  isPlaying,
+  currentTimeFn,
+  duration,
+  onSeek,
+  onSeekEnd,
+}: PlaybackControlsProps) {
   const [, setUpdate] = useState(false);
 
   const withPrefixedZero = (num: number): string => {
-    return (num < 10 ? `0` : '') + num;
+    return (num < 10 ? `0` : "") + num;
   };
 
   const playbackToMinuteString = (playback: number): string => {
@@ -28,42 +33,39 @@ export function PlaybackTime({ isPlaying, currentTimeFn, duration, onSeek, onSee
     const fullMinute = Math.floor(minutes);
     const remainderMinute = minutes - fullMinute;
     const seconds = Math.trunc(remainderMinute * 60);
-    return `${withPrefixedZero(fullMinute)}:${withPrefixedZero(
-      seconds
-    )}`;
+    return `${withPrefixedZero(fullMinute)}:${withPrefixedZero(seconds)}`;
   };
 
   const seek = (value: number | number[]) => {
     if (Array.isArray(value)) {
-      console.log('Cannot seek an array');
+      console.log("Cannot seek an array");
     } else {
-      setUpdate(x => !x);
+      setUpdate((x) => !x);
       onSeek(value);
     }
   };
 
   const seekEnd = () => {
     onSeekEnd();
-  }
+  };
 
   const time = currentTimeFn();
 
   useEffect(() => {
     // TODO: find better way, currently it updates everytime?
-    const interval = setInterval(() => setUpdate(x => !x), 1000);
+    const interval = setInterval(() => setUpdate((x) => !x), 1000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <FlexBox flexDirection="row">
-      <span>
-        {playbackToMinuteString(time > duration ? duration : time)}
-      </span>
-      <YtSlider
+    <FlexBox classes="!flex-row">
+      <span>{playbackToMinuteString(time > duration ? duration : time)}</span>
+      <input
+        type="range"
         min={0}
         max={duration}
         value={time}
-        onChange={(e, v) => seek(v)}
+        onChange={(e) => seek(e.target.valueAsNumber)}
         onMouseUp={() => seekEnd()}
       />
       <span>{playbackToMinuteString(duration)}</span>

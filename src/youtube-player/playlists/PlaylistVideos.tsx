@@ -1,11 +1,10 @@
-import { Checkbox, IconButton, Tooltip, Typography } from '@material-ui/core';
-import { GetApp } from '@material-ui/icons';
-import React, { useContext, useState } from 'react';
-import { PlaylistInfo, PlaylistVideo } from '../types';
-import { PlaylistVideoBlock } from './PlaylistVideoBlock';
-import FlexBox from '../../components/FlexBox';
-import { YoutubeContext } from '../youtube/YoutubeContext';
-import { VideoDownloadResult } from '../youtube/YoutubeService';
+import React, { useContext, useState } from "react";
+import { FaDownload } from "react-icons/fa6";
+import { PlaylistInfo, PlaylistVideo } from "../types";
+import { PlaylistVideoBlock } from "./PlaylistVideoBlock";
+import FlexBox from "../../components/FlexBox";
+import { YoutubeContext } from "../youtube/YoutubeContext";
+import { VideoDownloadResult } from "../youtube/YoutubeService";
 
 interface VideoListProps {
   playlist: PlaylistInfo;
@@ -14,14 +13,18 @@ interface VideoListProps {
   editPlaylist: PlaylistInfo | null;
 }
 
-
-export default function PlaylistVideos({ editPlaylist, playlist, onVideoClick, onVideoUpdate }: VideoListProps) {
+export default function PlaylistVideos({
+  editPlaylist,
+  playlist,
+  onVideoClick,
+  onVideoUpdate,
+}: VideoListProps) {
   const { videoService, mpdService } = useContext(YoutubeContext);
   const [downloading, setDownloading] = useState(false);
 
   const download = async (ids: string[]) => {
     if (downloading) {
-      console.log('Already downloading something');
+      console.log("Already downloading something");
       return;
     }
 
@@ -39,17 +42,17 @@ export default function PlaylistVideos({ editPlaylist, playlist, onVideoClick, o
       (id) => result.findIndex((r) => r.id === id) === -1
     );
     if (failedDownload.length > 0) {
-      console.log('Failed to download', failedDownload);
+      console.log("Failed to download", failedDownload);
     }
 
     await mpdService.update();
     setDownloading(false);
-  }
+  };
 
   const downloadAll = () => {
     const ids = playlist.videos.map((v) => v.id);
     download(ids);
-  }
+  };
 
   const toggleAllVideos = () => {
     const disabled = playlist.videos.every((v) => !v.disabled);
@@ -58,7 +61,7 @@ export default function PlaylistVideos({ editPlaylist, playlist, onVideoClick, o
       v.disabled = disabled;
       onVideoUpdate(v);
     });
-  }
+  };
 
   const clickedPlaylistVideo = (video: PlaylistVideo) => {
     if (editPlaylist) {
@@ -67,14 +70,14 @@ export default function PlaylistVideos({ editPlaylist, playlist, onVideoClick, o
     } else {
       onVideoClick(video);
     }
-  }
+  };
 
   const editMode = !!editPlaylist;
 
-  const newVideos: React.ReactElement[] = []
-  const downloadedVideos: React.ReactElement[] = []
+  const newVideos: React.ReactElement[] = [];
+  const downloadedVideos: React.ReactElement[] = [];
 
-  playlist.videos.forEach(v => {
+  playlist.videos.forEach((v) => {
     if (videoService.isVideoDownloaded(v.id)) {
       downloadedVideos.push(
         <li key={v.id} className="flex-horizontal">
@@ -85,7 +88,7 @@ export default function PlaylistVideos({ editPlaylist, playlist, onVideoClick, o
             onClick={() => clickedPlaylistVideo(v)}
           />
         </li>
-      )
+      );
     } else {
       newVideos.push(
         <li key={v.id}>
@@ -105,8 +108,9 @@ export default function PlaylistVideos({ editPlaylist, playlist, onVideoClick, o
     <>
       <div className="flex-vertical gap">
         {editPlaylist && (
-          <FlexBox style={{ justifyContent: 'flex-start' }}>
-            <Checkbox
+          <FlexBox classes="justify-start">
+            <input
+              type="checkbox"
               checked={enabled}
               onChange={() => toggleAllVideos()}
             />
@@ -119,22 +123,19 @@ export default function PlaylistVideos({ editPlaylist, playlist, onVideoClick, o
         )}
         {downloadedVideos.length > 0 && <ul>{downloadedVideos}</ul>}
       </div>
-      {
-        newVideos.length > 0 && (
-          <div>
-            <Typography variant="h5">Not Downloaded Videos</Typography>
-            <Tooltip title="Download all">
-              <IconButton
-                onClick={() => downloadAll()}
-                disabled={downloading}
-              >
-                <GetApp />
-              </IconButton>
-            </Tooltip>
-            <ul>{newVideos}</ul>
-          </div>
-        )
-      }
+      {newVideos.length > 0 && (
+        <div>
+          <div className="font-bold">Not Downloaded Videos</div>
+          <button
+            title="Download al"
+            onClick={() => downloadAll()}
+            disabled={downloading}
+          >
+            <FaDownload />
+          </button>
+          <ul>{newVideos}</ul>
+        </div>
+      )}
     </>
-  )
+  );
 }
