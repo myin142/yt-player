@@ -1,6 +1,6 @@
 import { FaVolumeHigh } from "react-icons/fa6";
 import { QueueItem, Status } from "../../services/mpd.service";
-import { MdShuffle, MdOutlineSkipNext } from "react-icons/md";
+import { MdShuffle, MdOutlineSkipNext, MdSkipNext } from "react-icons/md";
 
 interface PlaylistQueueProps {
   status: Status;
@@ -28,8 +28,8 @@ export default function PlaylistQueue({
           } p-2 rounded w-full flex gap-2 justify-start text-left`}
         >
           <span>{v.title}</span>
-          {isPlaying && <FaVolumeHigh />}
-          {isNext && <MdOutlineSkipNext />}
+          {isPlaying && <FaVolumeHigh className="text-xl" />}
+          {isNext && <MdOutlineSkipNext className="text-xl" />}
         </button>
       </li>
     );
@@ -46,11 +46,21 @@ export default function PlaylistQueue({
         <div className="flex justify-end">
           <button
             onClick={() => onShuffle(!status.shuffle)}
-            className={`p-2 hover:text-white text-slate-300 ${
+            className={`p-2 text-slate-300 ${
               status.shuffle ? "!text-red-500" : ""
             }`}
           >
             <MdShuffle className="text-xl" />
+          </button>
+          <button
+            onClick={() =>
+              onPlayQueue(
+                queue.findIndex((q) => q.id === status.nextPlaying) + 1
+              )
+            }
+            className={`p-2 text-slate-300`}
+          >
+            <MdSkipNext className="text-xl" />
           </button>
         </div>
       </div>
