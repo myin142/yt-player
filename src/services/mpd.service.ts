@@ -7,12 +7,13 @@ export interface MpdService {
   play(id: string): Promise<void>;
   queuePlaylist(ids: string[]): Promise<void>;
 
-  toggleRandom(): Promise<void>;
+  setShuffle(shuffle: boolean): Promise<void>;
+  playFromQueue(idx: number): Promise<void>;
 }
 
 export interface Status {
-  state: 'playing' | 'paused' | null;
-  random: boolean;
+  state: "playing" | "paused" | null;
+  shuffle: boolean;
   repeat: boolean;
   playing: string;
   nextPlaying: string;

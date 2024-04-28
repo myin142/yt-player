@@ -39,7 +39,7 @@ export default function PlaylistVideos({
     );
 
     const failedDownload = ids.filter(
-      (id) => result.findIndex((r) => r.id === id) === -1
+      (id) => result.findIndex((r) => r?.id === id) === -1
     );
     if (failedDownload.length > 0) {
       console.log("Failed to download", failedDownload);

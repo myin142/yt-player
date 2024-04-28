@@ -49,6 +49,7 @@ class YoutubePlayerPage extends React.Component<
   }
 
   async componentDidMount() {
+    await this.mpd.update();
     await this.updateStatus();
     await this.updateQueue();
     setInterval(() => this.updateStatus(), 5000);
@@ -78,8 +79,13 @@ class YoutubePlayerPage extends React.Component<
     }
   }
 
-  private async toggleRandom() {
-    await this.mpd.toggleRandom();
+  private async setShuffle(shuffle: boolean) {
+    await this.mpd.setShuffle(shuffle);
+    await this.updateStatus();
+  }
+
+  private async playFromQueue(idx: number) {
+    await this.mpd.playFromQueue(idx);
     await this.updateStatus();
   }
 
@@ -183,16 +189,8 @@ class YoutubePlayerPage extends React.Component<
     this.setState({ loading: false });
   }
 
-  private playableVideos(): PlaylistVideo[] {
-    return this.state.playingPlaylist?.videos.filter((v) => !v.disabled) || [];
-  }
-
   render() {
-    const {
-      selectedPlaylist,
-      queue,
-      status,
-    } = this.state;
+    const { selectedPlaylist, queue, status } = this.state;
 
     return (
       <>
@@ -219,8 +217,13 @@ class YoutubePlayerPage extends React.Component<
           </div>
           {status && queue.length > 0 && (
             <aside className="side-panel basis-80">
-              <div className="panel scroll flex w-sm">
-                <PlaylistQueue queue={queue} status={status} />
+              <div className="panel flex grow">
+                <PlaylistQueue
+                  queue={queue}
+                  status={status}
+                  onShuffle={(x) => this.setShuffle(x)}
+                  onPlayQueue={(i) => this.playFromQueue(i)}
+                />
               </div>
               <img
                 src={this.youtubeService.getThumbnail(status.playing)}
@@ -230,24 +233,6 @@ class YoutubePlayerPage extends React.Component<
             </aside>
           )}
         </div>
-        {/* {status && (
-          <footer className="panel">
-            <MusicPlayer
-              status={status}
-              toggleRandom={() => this.toggleRandom()}
-              videoService={this.videoService}
-              videoChanged={videoChanged}
-              dirtyQueue={dirtyQueue}
-              playingVideos={this.playableVideos()}
-              playingVideo={playingVideo}
-              queue={queue}
-              onVideoPlay={(v) =>
-                this.setState({ playingVideo: v, videoChanged: !videoChanged })
-              }
-              onQueueChanged={(q) => this.setState({ queue: q })}
-            />
-          </footer>
-        )} */}
       </>
     );
   }

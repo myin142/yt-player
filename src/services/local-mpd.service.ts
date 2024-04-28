@@ -38,15 +38,19 @@ export class LocalMpdService implements MpdService {
     }
   }
 
+  async playFromQueue(idx: number): Promise<void> {
+    await this.mpc(["play", `${idx}`]);
+  }
+
   async getStatus(): Promise<Status> {
     const lines = await this.mpc(["status", "-f", "%file%"]);
     const queued = await this.mpc(["queued", "-f", "%file%"]);
 
     let state = null;
-    let random = false;
+    let shuffle = false;
     let repeat = false;
     let playing = "";
-    const nextPlaying = queued.length > 0 ? this.parseId(queued[0]) : '';
+    const nextPlaying = queued.length > 0 ? this.parseId(queued[0]) : "";
 
     lines.forEach((line, i) => {
       if (i === 0 && line.includes(".")) {
@@ -54,23 +58,22 @@ export class LocalMpdService implements MpdService {
       } else if (line.startsWith("[")) {
         state = line.startsWith("[playing]") ? "playing" : "paused";
       } else if (line.startsWith("volume:")) {
-        random = line.includes("random: on");
+        shuffle = line.includes("random: on");
         repeat = line.includes("repeat: on");
       }
     });
 
     return {
       state,
-      random,
+      shuffle,
       repeat,
       playing,
       nextPlaying,
     };
   }
 
-  async toggleRandom() {
-    const status = await this.getStatus();
-    const newState = status.random ? "off" : "on";
+  async setShuffle(shuffle: boolean) {
+    const newState = shuffle ? "on" : "off";
     await this.mpc(["random", newState]);
   }
 
