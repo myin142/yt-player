@@ -10,6 +10,7 @@
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx ."
   },
+  "license": "MIT",
   "keywords": [],
   "devDependencies": {
     "@electron-forge/cli": "^6.2.1",
