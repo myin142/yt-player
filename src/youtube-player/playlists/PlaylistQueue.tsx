@@ -1,12 +1,22 @@
 import { FaVolumeHigh } from "react-icons/fa6";
 import { QueueItem, Status } from "../../services/mpd.service";
-import { MdShuffle, MdOutlineSkipNext, MdSkipNext } from "react-icons/md";
+import {
+  MdShuffle,
+  MdOutlineSkipNext,
+  MdSkipNext,
+  MdSkipPrevious,
+  MdPlayArrow,
+  MdPause,
+} from "react-icons/md";
 
 interface PlaylistQueueProps {
   status: Status;
   queue: QueueItem[];
   onShuffle: (shuffle: boolean) => void;
   onPlayQueue: (idx: number) => void;
+  onPlayNext: () => void;
+  onPlayPrev: () => void;
+  onPlayToggle: () => void;
 }
 
 export default function PlaylistQueue({
@@ -14,6 +24,9 @@ export default function PlaylistQueue({
   queue,
   onShuffle,
   onPlayQueue,
+  onPlayNext,
+  onPlayPrev,
+  onPlayToggle,
 }: PlaylistQueueProps) {
   const queueItems = queue.map((v, i) => {
     const isPlaying = v.id === status.playing;
@@ -52,14 +65,18 @@ export default function PlaylistQueue({
           >
             <MdShuffle className="text-xl" />
           </button>
+          <button onClick={() => onPlayPrev()} className={`p-2 text-slate-300`}>
+            <MdSkipPrevious className="text-xl" />
+          </button>
           <button
-            onClick={() =>
-              onPlayQueue(
-                queue.findIndex((q) => q.id === status.nextPlaying) + 1
-              )
-            }
+            onClick={() => onPlayToggle()}
             className={`p-2 text-slate-300`}
           >
+            {(status.state === "playing" && (
+              <MdPause className="text-xl" />
+            )) || <MdPlayArrow className="text-xl" />}
+          </button>
+          <button onClick={() => onPlayNext()} className={`p-2 text-slate-300`}>
             <MdSkipNext className="text-xl" />
           </button>
         </div>

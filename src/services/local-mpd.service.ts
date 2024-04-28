@@ -42,6 +42,18 @@ export class LocalMpdService implements MpdService {
     await this.mpc(["play", `${idx}`]);
   }
 
+  async playNext(): Promise<void> {
+    await this.mpc(["next"]);
+  }
+
+  async playPrev(): Promise<void> {
+    await this.mpc(["prev"]);
+  }
+
+  async playToggle(): Promise<void> {
+    await this.mpc(["toggle"]);
+  }
+
   async getStatus(): Promise<Status> {
     const lines = await this.mpc(["status", "-f", "%file%"]);
     const queued = await this.mpc(["queued", "-f", "%file%"]);

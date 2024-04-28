@@ -60,6 +60,21 @@ export default function YoutubePlayerPage() {
     await updateStatus();
   };
 
+  const playNext = async () => {
+    await mpdService.playNext();
+    await updateStatus();
+  };
+
+  const playPrev = async () => {
+    await mpdService.playPrev();
+    await updateStatus();
+  };
+
+  const playToggle = async () => {
+    await mpdService.playToggle();
+    await updateStatus();
+  };
+
   const updateStatus = async () => {
     const status = await mpdService.getStatus();
     console.log("Updating status", status);
@@ -181,6 +196,9 @@ export default function YoutubePlayerPage() {
                 status={status}
                 onShuffle={(x) => setShuffle(x)}
                 onPlayQueue={(i) => playFromQueue(i)}
+                onPlayNext={() => playNext()}
+                onPlayPrev={() => playPrev()}
+                onPlayToggle={() => playToggle()}
               />
             </div>
             <img

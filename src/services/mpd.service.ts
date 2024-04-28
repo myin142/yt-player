@@ -9,6 +9,9 @@ export interface MpdService {
 
   setShuffle(shuffle: boolean): Promise<void>;
   playFromQueue(idx: number): Promise<void>;
+  playNext(): Promise<void>;
+  playPrev(): Promise<void>;
+  playToggle(): Promise<void>;
 }
 
 export interface Status {

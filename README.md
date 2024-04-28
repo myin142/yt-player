@@ -10,14 +10,14 @@ Features:
   - [ ] MPD Controls
     - [x] Play playlists to MPD server
     - [x] Toggle random
-    - [ ] Show active playing music
+    - [x] Show active playing music
     - [ ] Toggle repeat
     - [ ] Create playlists
     - [ ] Display duration/location of music
     - [ ] Seek
-    - [ ] Play next queued music
+    - [x] Play next queued music
     - [x] Queue / Play a selected music
-    - [ ] Play / Pause
+    - [x] Play / Pause
     - [ ] Set volume
 
 
