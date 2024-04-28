@@ -13,8 +13,10 @@ export class VideoService {
   private appPath = "";
 
   constructor(public youtubeService: YoutubeService, private filesystem = fs) {
-    ipcRenderer.invoke("getAppPath").then((x) => (this.appPath = x));
-    this.loadDownloadedCache();
+    ipcRenderer.invoke("getAppPath").then((x) => {
+      this.appPath = x;
+      this.loadDownloadedCache();
+    });
   }
 
   // TODO: create cache service?

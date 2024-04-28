@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { FaPlus, FaX } from "react-icons/fa6";
 import { PlaylistInfo } from "../types";
-import { PlaylistSyncButtons } from "./PlaylistSyncButtons";
 import { PlaylistContext } from "./PlaylistContext";
 import { YoutubeContext } from "../youtube/YoutubeContext";
 
@@ -27,7 +26,6 @@ export function Playlists({
   const [playlists, setPlaylists] = useState([] as PlaylistInfo[]);
   const [createPlaylistError, setCreatePlaylistError] = useState("");
   const [createPlaylistId, setCreatePlaylistId] = useState("");
-  const [showCreatePlaylist, setShowCreatePlaylist] = useState(false);
   const [creating, setCreating] = useState(false);
   const [timeoutId, setTimeoutId] = useState(null as NodeJS.Timeout | null);
 
@@ -37,7 +35,6 @@ export function Playlists({
       setPlaylists(p);
       setCreatePlaylistError("");
       setCreatePlaylistId("");
-      setShowCreatePlaylist(false);
       setCreating(false);
     });
 
@@ -49,7 +46,7 @@ export function Playlists({
   useEffect(() => {
     if (createPlaylistError !== "") {
       setTimeoutId(setTimeout(() => setCreatePlaylistError(""), 3000));
-    } else if(timeoutId != null) {
+    } else if (timeoutId != null) {
       clearTimeout(timeoutId);
       setTimeoutId(null);
     }
@@ -103,15 +100,21 @@ export function Playlists({
 
   return (
     <div className="flex-vertical" style={{ gap: "1em" }}>
-      <div className="flex-horizontal">
+      <div className="flex gap-4">
+        <input
+          className="px-2 py w-full rounded bg-slate-600"
+          style={{ background: "#3f3f3f" }}
+          value={createPlaylistId}
+          onChange={(e) => setCreatePlaylistId(e.target.value)}
+        />
         <button
           title="Add youtube playlist"
           aria-label="add"
-          onClick={() => setShowCreatePlaylist(!showCreatePlaylist)}
+          disabled={creating}
+          onClick={() => createPlaylist()}
         >
           <FaPlus />
         </button>
-        {/* <PlaylistSyncButtons /> */}
       </div>
 
       {createPlaylistError && (
@@ -123,25 +126,6 @@ export function Playlists({
             onClick={() => setCreatePlaylistError("")}
           >
             <FaX />
-          </button>
-        </div>
-      )}
-      {showCreatePlaylist && (
-        <div className="flex-horizontal" style={{ gap: "0.5em" }}>
-          <input
-            className="px py-2 w-full rounded bg-slate-600"
-            style={{ background: "#3f3f3f" }}
-            value={createPlaylistId}
-            onChange={(e) => setCreatePlaylistId(e.target.value)}
-          />
-          <button
-            className="btn-2"
-            style={{ flexShrink: 1, width: "unset" }}
-            type="button"
-            disabled={creating}
-            onClick={() => createPlaylist()}
-          >
-            Create
           </button>
         </div>
       )}

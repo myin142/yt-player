@@ -45,7 +45,11 @@ export default function PlaylistVideos({
       console.log("Failed to download", failedDownload);
     }
 
-    await mpdService.update();
+    try {
+      await mpdService.update();
+    } catch (e) {
+      console.error("Failed to update mpd service", e);
+    }
     setDownloading(false);
   };
 

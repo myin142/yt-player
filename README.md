@@ -23,7 +23,7 @@ Features:
 
 ### Install
 
-Youtube-dl is required for this application to work
+Youtube-dl is required for this application to work. (Might not work inside the EU, cookie required?)
 
 `pip install youtube-dl`
 
