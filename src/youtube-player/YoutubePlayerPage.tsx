@@ -201,11 +201,14 @@ export default function YoutubePlayerPage() {
                 onPlayToggle={() => playToggle()}
               />
             </div>
-            <img
-              src={youtubeService.getThumbnail(status.playing)}
-              alt="Playing Video Thumbnail"
-              className="bg-cover rounded max-w-lg"
-            />
+            <div
+              className="rounded w-full h-96 bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${youtubeService.getThumbnail(
+                  status.playing
+                )})`,
+              }}
+            ></div>
           </aside>
         )}
       </div>

@@ -100,7 +100,7 @@ export function Playlists({
           } ${noneDownloaded ? "opacity-50" : ""}`}
           type="button"
           onClick={() => selectPlaylist(p)}
-          onKeyUp={() => selectPlaylist(p)}
+          // onKeyUp={() => selectPlaylist(p)}
         >
           <span>{p.title || "Not a playlist"}</span>
           <span className="text-sm opacity-75">
