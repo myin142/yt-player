@@ -2,8 +2,7 @@
 
 Desktop application that uses youtube-dl to download and play playlists/videos.
 
-Note: code currently still contains old music player code that will be replaced to MPD controls in the future.
-Some buttons might not work
+Using MPD you can also play the music with some basic control. It directly shows your MPD queue inside the application, so it can also be controlled outside of the application using the normal cli commands with `mpc`.
 
 Features:
   - [x] Download playlists from youtube
@@ -11,14 +10,14 @@ Features:
     - [x] Play playlists to MPD server
     - [x] Toggle random
     - [x] Show active playing music
-    - [ ] Toggle repeat
-    - [ ] Create playlists
-    - [ ] Display duration/location of music
-    - [ ] Seek
+    - [ ] Set volume
     - [x] Play next queued music
     - [x] Queue / Play a selected music
     - [x] Play / Pause
-    - [ ] Set volume
+    - [ ] Display duration/location of music
+    - [ ] Toggle repeat
+    - [ ] Seek
+    - [ ] Create playlists
 
 
 ### Install
@@ -48,6 +47,9 @@ audio_output {
 }
 ```
 
-Download latest [release](https://github.com/myin142/yt-player/releases)
+- For the linux users with i3 desktop, you can use this script to display the music in i3blocks
+  - https://github.com/myin142/dotfiles/blob/master/i3wm/i3/scripts/mediaplayer
+
+### Preview
 
 ![Preview](preview.png)
