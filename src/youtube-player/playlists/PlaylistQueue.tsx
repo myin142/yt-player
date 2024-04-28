@@ -16,7 +16,7 @@ export default function PlaylistQueue({ status, queue }: PlaylistQueueProps) {
         <li
           key={i}
           className={`${isPlaying ? "text-red-500" : ""}
-          ${isNext ? "text-red-300" : ""}
+          ${isNext ? "text-red-400" : ""}
           
           flex gap-2 items-center`}
         >

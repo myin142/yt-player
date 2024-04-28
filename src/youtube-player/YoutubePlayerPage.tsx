@@ -196,8 +196,8 @@ class YoutubePlayerPage extends React.Component<
 
     return (
       <>
-        <div className="container">
-          <nav className="side-panel">
+        <div className="flex grow p-4 gap-2">
+          <nav className="flex flex-col justify-between basis-80 gap">
             <div className="panel scroll">
               <Playlists
                 selectedPlaylist={selectedPlaylist}

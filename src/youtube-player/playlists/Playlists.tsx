@@ -21,7 +21,7 @@ export function Playlists({
   selectedPlaylist,
   onPlaylistSelected,
 }: PlaylistsProps) {
-  const { service: ytService } = useContext(YoutubeContext);
+  const { service: ytService, videoService } = useContext(YoutubeContext);
   const { service } = useContext(PlaylistContext);
   const [playlists, setPlaylists] = useState([] as PlaylistInfo[]);
   const [createPlaylistError, setCreatePlaylistError] = useState("");
@@ -31,8 +31,8 @@ export function Playlists({
 
   useEffect(() => {
     service.loadPlaylists();
-    service.addListener("playlistUpdated", (p) => {
-      setPlaylists(p);
+    service.addListener("playlistUpdated", (p: PlaylistInfo[]) => {
+      setPlaylists(p.sort((a, b) => a.title.localeCompare(b.title)));
       setCreatePlaylistError("");
       setCreatePlaylistId("");
       setCreating(false);
@@ -79,20 +79,25 @@ export function Playlists({
   };
 
   const playlistsList = playlists.map((p, i) => {
+    const downloadedVideos = p.videos.filter((v) =>
+      videoService.isVideoDownloaded(v.id)
+    );
+    const isSelected = selectedPlaylist?.playlistId === p.playlistId;
+    const noneDownloaded = downloadedVideos.length === 0;
     return (
       <li key={i}>
         <button
-          className="btn-2"
+          className={`p-2 rounded w-full flex gap-4 items-center justify-between ${
+            isSelected ? "bg-red-400" : ""
+          } ${noneDownloaded ? "opacity-50" : ""}`}
           type="button"
           onClick={() => onPlaylistSelected(p)}
           onKeyUp={() => onPlaylistSelected(p)}
-          style={
-            selectedPlaylist?.playlistId === p.playlistId
-              ? { fontWeight: "bold" }
-              : {}
-          }
         >
-          {p.title || "Not a playlist"}
+          <span>{p.title || "Not a playlist"}</span>
+          <span className="text-sm opacity-75">
+            {downloadedVideos.length}/{p.videos.length}
+          </span>
         </button>
       </li>
     );
@@ -100,6 +105,7 @@ export function Playlists({
 
   return (
     <div className="flex-vertical" style={{ gap: "1em" }}>
+      <div className="font-bold">Playlists</div>
       <div className="flex gap-4">
         <input
           className="px-2 py w-full rounded bg-slate-600"
@@ -118,7 +124,7 @@ export function Playlists({
       </div>
 
       {createPlaylistError && (
-        <div className="flex gap-2 absolute bottom-4 left-1/2 p-2 bg-red-800 rounded">
+        <div className="flex gap-2 absolute bottom-4 left-1/2 p-4 bg-red-800 rounded">
           <span>{createPlaylistError}</span>
           <button
             aria-label="close"
