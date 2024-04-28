@@ -1,16 +1,15 @@
-import React from 'react';
-import { MusicPlayer } from './music-player/MusicPlayer';
-import PlaylistQueue from './playlists/PlaylistQueue';
-import { Playlists } from './playlists/Playlists';
-import { PlaylistInfo, PlaylistVideo } from './types';
-import LocalYoutubeDlService from './youtube/LocalYoutubeDlService';
-import { MainPanel } from './MainPanel';
-import { Status } from '../services/mpd.service';
-import { PlaylistContext } from './playlists/PlaylistContext';
-import {mpdService, videoService} from './youtube/YoutubeContext';
+import React from "react";
+import PlaylistQueue from "./playlists/PlaylistQueue";
+import { Playlists } from "./playlists/Playlists";
+import { PlaylistInfo, PlaylistVideo } from "./types";
+import LocalYoutubeDlService from "./youtube/LocalYoutubeDlService";
+import { MainPanel } from "./MainPanel";
+import { QueueItem, Status } from "../services/mpd.service";
+import { PlaylistContext } from "./playlists/PlaylistContext";
+import { mpdService, videoService } from "./youtube/YoutubeContext";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface YoutubePlayerPageProps { }
+export interface YoutubePlayerPageProps {}
 
 export interface YoutubePlayerPageState {
   selectedPlaylist: PlaylistInfo | null;
@@ -18,7 +17,7 @@ export interface YoutubePlayerPageState {
   playingVideo: PlaylistVideo | null;
   loading: boolean;
   videoChanged: boolean;
-  queue: number[];
+  queue: QueueItem[];
   dirtyQueue: boolean;
   status: Status | null;
 }
@@ -26,15 +25,14 @@ export interface YoutubePlayerPageState {
 class YoutubePlayerPage extends React.Component<
   YoutubePlayerPageProps,
   YoutubePlayerPageState
-  > {
-
+> {
   static contextType = PlaylistContext;
 
   private readonly youtubeService = new LocalYoutubeDlService();
 
   private readonly videoService = videoService;
 
-  private readonly mpd = mpdService
+  private readonly mpd = mpdService;
 
   constructor(props: YoutubePlayerPageProps) {
     super(props);
@@ -52,25 +50,28 @@ class YoutubePlayerPage extends React.Component<
 
   async componentDidMount() {
     await this.updateStatus();
+    await this.updateQueue();
+    setInterval(() => this.updateStatus(), 5000);
   }
 
   private async playSelectedPlaylist(video: PlaylistVideo) {
     const { selectedPlaylist } = this.state;
 
     if (!this.videoService.isVideoDownloaded(video.id)) {
-      console.log('Video is not downloaded', video);
+      console.log("Video is not downloaded", video);
       return;
     }
 
     const videoIds = selectedPlaylist?.videos
-      .filter(v => !v.disabled && this.videoService.isVideoDownloaded(v.id))
-      .map(v => v.id);
+      .filter((v) => !v.disabled && this.videoService.isVideoDownloaded(v.id))
+      .map((v) => v.id);
 
     if (videoIds) {
       try {
         await this.mpd.queuePlaylist(videoIds);
         await this.mpd.play(video.id);
         await this.updateStatus();
+        await this.updateQueue();
       } catch (e) {
         console.log(e);
       }
@@ -84,11 +85,17 @@ class YoutubePlayerPage extends React.Component<
 
   private async updateStatus() {
     const status = await this.mpd.getStatus();
+    console.log("Updating status", status);
     if (status.state != null) {
       this.setState({ status });
     } else {
       this.setState({ status: null });
     }
+  }
+
+  private async updateQueue() {
+    const queue = await this.mpd.getQueue();
+    this.setState({ queue });
   }
 
   updatePlaylistVideo(video: PlaylistVideo) {
@@ -115,7 +122,7 @@ class YoutubePlayerPage extends React.Component<
         ...playlist,
       };
 
-      // this.context.service.updatePlaylist(updated)
+      this.context.service.updatePlaylist(updated);
       this.setState({
         selectedPlaylist: updated,
       });
@@ -126,13 +133,13 @@ class YoutubePlayerPage extends React.Component<
     const playlistId = playlist?.playlistId;
     const selectedPlaylist = playlist || this.state.selectedPlaylist;
     if (!playlistId) {
-      console.log('Cannot load playlist videos without id');
+      console.log("Cannot load playlist videos without id");
       return;
     }
 
     const { loading } = this.state;
     if (loading) {
-      console.log('Already loading something');
+      console.log("Already loading something");
       return;
     }
 
@@ -177,19 +184,13 @@ class YoutubePlayerPage extends React.Component<
   }
 
   private playableVideos(): PlaylistVideo[] {
-    return (
-      this.state.playingPlaylist?.videos.filter((v) => !v.disabled) ||
-      []
-    );
+    return this.state.playingPlaylist?.videos.filter((v) => !v.disabled) || [];
   }
 
   render() {
     const {
       selectedPlaylist,
-      playingVideo,
-      videoChanged,
       queue,
-      dirtyQueue,
       status,
     } = this.state;
 
@@ -200,16 +201,11 @@ class YoutubePlayerPage extends React.Component<
             <div className="panel scroll">
               <Playlists
                 selectedPlaylist={selectedPlaylist}
-                onPlaylistSelected={(p) => this.setState({selectedPlaylist: p})}
+                onPlaylistSelected={(p) =>
+                  this.setState({ selectedPlaylist: p })
+                }
               />
             </div>
-            {playingVideo && (
-              <img
-                src={this.youtubeService.getThumbnail(playingVideo.id)}
-                alt="Playing Video Thumbnail"
-                className="thumbnail"
-              />
-            )}
           </nav>
           <div className="main-container">
             {selectedPlaylist && (
@@ -221,24 +217,24 @@ class YoutubePlayerPage extends React.Component<
               />
             )}
           </div>
-          {playingVideo && (
-            <aside className="side-panel">
-              <div className="panel scroll">
-                <PlaylistQueue
-                  playingVideo={playingVideo}
-                  queue={queue}
-                  videos={this.playableVideos()}
-                />
+          {status && queue.length > 0 && (
+            <aside className="side-panel basis-80">
+              <div className="panel scroll flex w-sm">
+                <PlaylistQueue queue={queue} status={status} />
               </div>
+              <img
+                src={this.youtubeService.getThumbnail(status.playing)}
+                alt="Playing Video Thumbnail"
+                className="thumbnail"
+              />
             </aside>
           )}
         </div>
-        {status && (
+        {/* {status && (
           <footer className="panel">
             <MusicPlayer
               status={status}
               toggleRandom={() => this.toggleRandom()}
-
               videoService={this.videoService}
               videoChanged={videoChanged}
               dirtyQueue={dirtyQueue}
@@ -251,7 +247,7 @@ class YoutubePlayerPage extends React.Component<
               onQueueChanged={(q) => this.setState({ queue: q })}
             />
           </footer>
-        )}
+        )} */}
       </>
     );
   }

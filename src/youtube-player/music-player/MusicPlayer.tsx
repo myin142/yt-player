@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-return-assign */
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { FaPause, FaPlay, FaArrowRight, FaShuffle } from "react-icons/fa6";
-import ReactHowler from "react-howler";
 import { clamp } from "lodash";
 import FlexBox from "../../components/FlexBox";
 import { PlaylistVideo } from "../types";
@@ -63,7 +60,6 @@ export function MusicPlayer(props: MusicPlayerProps) {
   outerState.isPlaying = isPlaying;
 
   const prevProps = useRef(props);
-  const player = useRef(null as ReactHowler | null);
   const { videoService } = useContext(YoutubeContext);
 
   const getCurrentIndex = (): number => {
@@ -120,7 +116,6 @@ export function MusicPlayer(props: MusicPlayerProps) {
 
   const play = (video = playingVideo) => {
     if (video && videoService.isVideoDownloaded(video.id)) {
-      player.current?.seek(0);
       setIsPlaying(true);
     } else {
       console.warn("Cannot play not downloaded video");
@@ -148,10 +143,6 @@ export function MusicPlayer(props: MusicPlayerProps) {
       resume();
     }
   }
-
-  const setSongDuration = () => {
-    setDuration(player.current?.duration() || 0);
-  };
 
   const seek = (value: number) => {
     if (isPlaying) {
@@ -211,22 +202,8 @@ export function MusicPlayer(props: MusicPlayerProps) {
     prevProps.current = props;
   });
 
-  // const playingFile = playingVideo ? videoService.videoPath(playingVideo.id) : null;
-
-  // const v = volume * 1.2;
-
   return (
     <FlexBox classes="!flex-row grow gap-2 px">
-      {/* {playingFile && (
-        <ReactHowler
-          src={playingFile}
-          volume={v * v}
-          playing={isPlaying}
-          onLoad={() => setSongDuration()}
-          onEnd={() => playNextVideo()}
-          ref={player}
-        />
-      )} */}
       <div className="controls flex-vertical">
         <FlexBox classes="!flex-row">
           {(isPlaying && (

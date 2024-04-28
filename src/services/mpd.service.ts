@@ -1,6 +1,6 @@
 export interface MpdService {
   getStatus(): Promise<Status>;
-  getQueue(): Promise<string[]>;
+  getQueue(): Promise<QueueItem[]>;
 
   update(): Promise<void>;
   next(): Promise<void>;
@@ -14,4 +14,11 @@ export interface Status {
   state: 'playing' | 'paused' | null;
   random: boolean;
   repeat: boolean;
+  playing: string;
+  nextPlaying: string;
+}
+
+export interface QueueItem {
+  title: string;
+  id: string;
 }

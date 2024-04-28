@@ -4,7 +4,6 @@ import React from "react";
 import FlexBox from "../components/FlexBox";
 import IconToggle from "../components/IconToggle";
 import PlaylistVideos from "./playlists/PlaylistVideos";
-import { Searchbar } from "./Searchbar";
 import { PlaylistInfo, PlaylistVideo } from "./types";
 
 interface MainPanelProps {
@@ -78,9 +77,7 @@ export class MainPanel extends React.Component<MainPanelProps, MainPanelState> {
           className="flex-horizontal main-padding"
           style={{ justifyContent: "space-between" }}
         >
-          <Searchbar />
-
-          <FlexBox classes="shrink">
+          <div className="flex">
             {selectedPlaylist && (
               <>
                 <IconToggle
@@ -98,7 +95,7 @@ export class MainPanel extends React.Component<MainPanelProps, MainPanelState> {
                 </IconToggle>
               </>
             )}
-          </FlexBox>
+          </div>
         </div>
 
         <main className="scroll">

@@ -4,9 +4,6 @@ import { PlaylistInfo } from "../types";
 import { ipcRenderer } from "electron";
 
 export class PlaylistService extends EventEmitter {
-  private static CLOUD_URL =
-    "https://kgd07w68ll.execute-api.eu-central-1.amazonaws.com/prod";
-
   private static PLAYLIST_FILE = "playlists.json";
 
   playlists: PlaylistCloud = {
@@ -25,45 +22,10 @@ export class PlaylistService extends EventEmitter {
     return `${this.appPath}/${PlaylistService.PLAYLIST_FILE}`;
   }
 
-  public hasCloudSync() {
-    return !!this.playlists.id;
-  }
-
-  async syncFromCloud(id = this.playlists.id) {
-    if (!id) {
-      console.log("Id cannot be empty");
-      return;
-    }
-
-    const data = await fetch(this.buildSyncUrl(id)).then((x) => x.json());
-    if (Array.isArray(data)) {
-      this.playlists = {
-        id,
-        playlists: data,
-      };
-      await this.updatePlaylists();
-    } else {
-      console.log("Invalid data fetched from cloud", data);
-    }
-  }
-
-  async uploadToCloud(id = this.playlists.id) {
-    if (!id) {
-      console.log("Id cannot be empty");
-      return;
-    }
-
-    await fetch(this.buildSyncUrl(id), {
-      method: "POST",
-      body: JSON.stringify(this.playlists.playlists),
-    });
-
-    this.playlists.id = id;
-    await this.updatePlaylists();
-  }
-
-  private buildSyncUrl(id: string) {
-    return `${PlaylistService.CLOUD_URL}/playlist/${id}`;
+  findPlaylistForVideo(id: string) {
+    return this.playlists.playlists.find((pl) =>
+      pl.videos.some((v) => v.id === id)
+    );
   }
 
   async loadPlaylists(): Promise<boolean> {

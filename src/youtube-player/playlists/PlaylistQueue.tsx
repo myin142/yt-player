@@ -1,58 +1,39 @@
 import { FaVolumeHigh } from "react-icons/fa6";
-import React from "react";
-import { PlaylistVideo } from "../types";
+import { QueueItem, Status } from "../../services/mpd.service";
+import { MdOutlineSkipNext } from "react-icons/md";
 
 interface PlaylistQueueProps {
-  playingVideo: PlaylistVideo;
-  videos: PlaylistVideo[];
-  queue: number[];
+  status: Status;
+  queue: QueueItem[];
 }
 
-// const useStyles = makeStyles((theme: Theme) =>
-//   createStyles({
-//     iconItem: {
-//       minWidth: 0,
-//       position: 'relative',
-//       left: '-0.5em',
-//     },
-//     icon: {
-//       color: theme.palette.secondary.main,
-//     },
-//   })
-// );
-
-export default function PlaylistQueue({
-  playingVideo,
-  queue,
-  videos,
-}: PlaylistQueueProps) {
-  // const styles = useStyles();
-  const currentIndex = videos.findIndex((v) => v.id === playingVideo.id);
-
-  const nextQueue = [...queue];
-  if (currentIndex !== -1) {
-    nextQueue.unshift(currentIndex);
-  }
-
-  const queueItems = nextQueue
-    .filter((i) => i >= 0 && i < videos.length)
-    .map((v, i) => {
-      return (
-        <>
-          <li key={i} className="border-b">
-            {i === 0 && <FaVolumeHigh />}
-            <span>{videos[v].title}</span>
-          </li>
-        </>
-      );
-    });
+export default function PlaylistQueue({ status, queue }: PlaylistQueueProps) {
+  const queueItems = queue.map((v, i) => {
+    const isPlaying = v.id === status.playing;
+    const isNext = v.id === status.nextPlaying;
+    return (
+      <>
+        <li
+          key={i}
+          className={`${isPlaying ? "text-red-500" : ""}
+          ${isNext ? "text-red-300" : ""}
+          
+          flex gap-2 items-center`}
+        >
+          <span>{v.title}</span>
+          {isPlaying && <FaVolumeHigh />}
+          {isNext && <MdOutlineSkipNext />}
+        </li>
+      </>
+    );
+  });
 
   return (
     <>
       {queueItems.length > 0 && (
-        <div>
-          <div className="font-bold border-b">Queue</div>
-          <ul>{queueItems}</ul>
+        <div className="flex flex-col grow">
+          <div className="font-bold mb-4">Queue</div>
+          <ul className="flex flex-col gap-4 grow">{queueItems}</ul>
         </div>
       )}
     </>

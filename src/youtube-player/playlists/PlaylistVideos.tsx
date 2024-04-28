@@ -112,18 +112,12 @@ export default function PlaylistVideos({
     <>
       <div className="flex-vertical gap">
         {editPlaylist && (
-          <FlexBox classes="justify-start">
-            <input
-              type="checkbox"
-              checked={enabled}
-              onChange={() => toggleAllVideos()}
-            />
-            {/* <InputField // playlist id cannot be changed anymore
-                placeholder="Playlist Id"
-                value={editPlaylist.playlistId}
-                onChange={(e) => this.onPlaylistIdChange(e)}
-              /> */}
-          </FlexBox>
+          <input
+            className="self-start"
+            type="checkbox"
+            checked={enabled}
+            onChange={() => toggleAllVideos()}
+          />
         )}
         {downloadedVideos.length > 0 && <ul>{downloadedVideos}</ul>}
       </div>

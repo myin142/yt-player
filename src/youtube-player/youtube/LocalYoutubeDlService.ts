@@ -24,11 +24,13 @@ export default class LocalYoutubeDlService implements YoutubeService {
   }, 5000);
 
   private cachePath = "";
+  private loaded = false;
 
   constructor() {
     ipcRenderer.invoke("getAppPath").then((x) => {
       this.cachePath = x;
       this.loadThumbnailCache();
+      this.loaded = true;
     });
   }
 
@@ -80,6 +82,9 @@ export default class LocalYoutubeDlService implements YoutubeService {
     if (this.thumbnailCmd[id]) {
       return "";
     }
+
+    // Thumbnail cache not loaded yet, download might not be required
+    if (!this.loaded) return;
 
     this.executeYoutubeDL(["--get-thumbnail", "--", id], (cmd) => {
       this.thumbnailCmd[id] = cmd;
