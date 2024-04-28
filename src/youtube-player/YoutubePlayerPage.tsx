@@ -178,7 +178,7 @@ export default function YoutubePlayerPage() {
             />
           </div>
         </nav>
-        <div className="main-container">
+        <div className="flex flex-col grow gap-2">
           {selectedPlaylist && (
             <MainPanel
               selectedPlaylist={selectedPlaylist}
@@ -189,7 +189,7 @@ export default function YoutubePlayerPage() {
           )}
         </div>
         {status && queue.length > 0 && (
-          <aside className="side-panel basis-80">
+          <aside className="side-panel basis-84">
             <div className="panel flex grow">
               <PlaylistQueue
                 queue={queue}
@@ -204,7 +204,7 @@ export default function YoutubePlayerPage() {
             <img
               src={youtubeService.getThumbnail(status.playing)}
               alt="Playing Video Thumbnail"
-              className="thumbnail"
+              className="bg-cover rounded max-w-lg"
             />
           </aside>
         )}

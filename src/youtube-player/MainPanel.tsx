@@ -1,7 +1,6 @@
 import { cloneDeep } from "lodash";
 import { FaEdit, FaSync } from "react-icons/fa";
 import React from "react";
-import FlexBox from "../components/FlexBox";
 import IconToggle from "../components/IconToggle";
 import PlaylistVideos from "./playlists/PlaylistVideos";
 import { PlaylistInfo, PlaylistVideo } from "./types";
@@ -73,10 +72,7 @@ export class MainPanel extends React.Component<MainPanelProps, MainPanelState> {
 
     return (
       <>
-        <div
-          className="flex-horizontal main-padding"
-          style={{ justifyContent: "space-between" }}
-        >
+        <div className="flex px-4 justify-between">
           <div className="flex">
             {selectedPlaylist && (
               <>
@@ -99,7 +95,7 @@ export class MainPanel extends React.Component<MainPanelProps, MainPanelState> {
         </div>
 
         <main className="scroll">
-          <div className="main-padding">
+          <div className="px-4 flex flex-col">
             <PlaylistVideos
               playlist={selectedPlaylist}
               onVideoClick={(v) => onPlay(v)}

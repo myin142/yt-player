@@ -2,7 +2,6 @@ import React, { useContext, useState } from "react";
 import { FaDownload } from "react-icons/fa6";
 import { PlaylistInfo, PlaylistVideo } from "../types";
 import { PlaylistVideoBlock } from "./PlaylistVideoBlock";
-import FlexBox from "../../components/FlexBox";
 import { YoutubeContext } from "../youtube/YoutubeContext";
 import { VideoDownloadResult } from "../youtube/YoutubeService";
 
@@ -84,7 +83,7 @@ export default function PlaylistVideos({
   playlist.videos.forEach((v) => {
     if (videoService.isVideoDownloaded(v.id)) {
       downloadedVideos.push(
-        <li key={v.id} className="flex-horizontal">
+        <li key={v.id}>
           <PlaylistVideoBlock
             playlistVideo={v}
             disabled={v.disabled}
@@ -110,7 +109,7 @@ export default function PlaylistVideos({
 
   return (
     <>
-      <div className="flex-vertical gap">
+      <div className="flex flex-col gap-4">
         {editPlaylist && (
           <input
             className="self-start"
@@ -119,7 +118,7 @@ export default function PlaylistVideos({
             onChange={() => toggleAllVideos()}
           />
         )}
-        {downloadedVideos.length > 0 && <ul>{downloadedVideos}</ul>}
+        {downloadedVideos.length > 0 && <ul className="flex flex-col gap-2">{downloadedVideos}</ul>}
       </div>
       {newVideos.length > 0 && (
         <div className="flex flex-col gap-2">
@@ -133,7 +132,7 @@ export default function PlaylistVideos({
               <FaDownload />
             </button>
           </div>
-          <ul>{newVideos}</ul>
+          <ul className="flex flex-col gap-2">{newVideos}</ul>
         </div>
       )}
     </>

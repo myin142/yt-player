@@ -1,6 +1,6 @@
-import React, { MouseEventHandler, useContext } from 'react';
-import { PlaylistVideo } from '../types';
-import { YoutubeContext } from '../youtube/YoutubeContext';
+import React, { MouseEventHandler, useContext } from "react";
+import { PlaylistVideo } from "../types";
+import { YoutubeContext } from "../youtube/YoutubeContext";
 
 export interface PlaylistVideoBlockProps {
   playlistVideo: PlaylistVideo;
@@ -16,9 +16,9 @@ export function PlaylistVideoBlock({
   editing,
 }: PlaylistVideoBlockProps) {
   const { service } = useContext(YoutubeContext);
-  let classes = 'btn-1 flex-horizontal video-block';
+  let classes = "btn-1 flex video-block";
   if (disabled && editing) {
-    classes += ' disabled';
+    classes += " disabled";
   }
 
   return (
@@ -28,10 +28,11 @@ export function PlaylistVideoBlock({
       onClick={onClick}
       disabled={disabled && !editing}
     >
-      <img
-        src={service.getThumbnail(playlistVideo.id)}
-        className="thumbnail"
-        alt={playlistVideo.title}
+      <div
+        className="rounded w-32 h-full bg-cover bg-center"
+        style={{
+          backgroundImage: `url(${service.getThumbnail(playlistVideo.id)})`,
+        }}
       />
       <div>{playlistVideo.title}</div>
     </button>

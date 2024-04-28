@@ -52,6 +52,14 @@ export function Playlists({
     }
   }, [createPlaylistError]);
 
+  const selectPlaylist = (p: PlaylistInfo) => {
+    if (p === selectedPlaylist) {
+      onPlaylistSelected(null)
+    } else {
+      onPlaylistSelected(p);
+    }
+  }
+
   const createPlaylist = async () => {
     if (playlists.find((p) => p.playlistId === createPlaylistId) != null) {
       setCreatePlaylistError("Playlist Id is already added");
@@ -91,8 +99,8 @@ export function Playlists({
             isSelected ? "bg-red-400" : ""
           } ${noneDownloaded ? "opacity-50" : ""}`}
           type="button"
-          onClick={() => onPlaylistSelected(p)}
-          onKeyUp={() => onPlaylistSelected(p)}
+          onClick={() => selectPlaylist(p)}
+          onKeyUp={() => selectPlaylist(p)}
         >
           <span>{p.title || "Not a playlist"}</span>
           <span className="text-sm opacity-75">
@@ -104,7 +112,7 @@ export function Playlists({
   });
 
   return (
-    <div className="flex-vertical" style={{ gap: "1em" }}>
+    <div className="flex flex-col" style={{ gap: "1em" }}>
       <div className="font-bold">Playlists</div>
       <div className="flex gap-4">
         <input

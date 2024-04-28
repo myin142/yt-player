@@ -71,27 +71,7 @@ button[disabled],
   padding: 0.5rem 1rem;
 }
 
-.pointer,
-button:not([disabled]) {
-  cursor: pointer;
-}
-
-.flex-horizontal {
-  display: flex;
-  flex-direction: row;
-}
-
-.flex-vertical {
-  display: flex;
-  flex-direction: column;
-}
-
-.gap {
-  gap: 1em;
-}
-
 .side-panel {
-  /* flex-basis: 15rem; */
   flex-shrink: 1;
   display: flex;
   flex-direction: column;
@@ -134,12 +114,6 @@ button:not([disabled]) {
   background-color: var(--background);
 }
 
-.thumbnail {
-  border-radius: 0.5rem;
-  max-height: 100%;
-  max-width: 100%;
-}
-
 .scroll {
   overflow-y: scroll;
   flex-grow: 1;
@@ -151,17 +125,6 @@ button:not([disabled]) {
   flex-grow: 1;
   padding: 1rem;
   gap: 1rem;
-}
-
-.main-container {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  gap: 1em;
-}
-
-.main-padding {
-  padding: 0 1rem;
 }
 
 footer {
