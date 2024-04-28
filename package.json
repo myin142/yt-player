@@ -1,7 +1,7 @@
 {
-  "name": "electron-react-typescript-tailwind-starter",
+  "name": "yt-player",
   "version": "1.0.0",
-  "description": "Ready-to-use project template for building cross-platform desktop applications with Electron, React, TypeScript, and Tailwind CSS.",
+  "description": "Offline Youtube Playlist Music Player",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
@@ -11,11 +11,6 @@
     "lint": "eslint --ext .ts,.tsx ."
   },
   "keywords": [],
-  "author": {
-    "name": "Rostislav Jadavan",
-    "email": "rostislav@jadavan.com"
-  },
-  "license": "MIT",
   "devDependencies": {
     "@electron-forge/cli": "^6.2.1",
     "@electron-forge/maker-deb": "^6.2.1",
@@ -23,6 +18,7 @@
     "@electron-forge/maker-squirrel": "^6.2.1",
     "@electron-forge/maker-zip": "^6.2.1",
     "@electron-forge/plugin-webpack": "^6.2.1",
+    "@electron-forge/publisher-github": "^7.4.0",
     "@types/lodash": "^4.17.0",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
