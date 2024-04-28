@@ -189,7 +189,7 @@ export default function YoutubePlayerPage() {
           )}
         </div>
         {status && queue.length > 0 && (
-          <aside className="side-panel basis-84">
+          <aside className="side-panel basis-[36rem]">
             <div className="panel flex grow">
               <PlaylistQueue
                 queue={queue}
