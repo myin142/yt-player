@@ -29,6 +29,7 @@ export function Playlists({
   const [createPlaylistId, setCreatePlaylistId] = useState("");
   const [showCreatePlaylist, setShowCreatePlaylist] = useState(false);
   const [creating, setCreating] = useState(false);
+  const [timeoutId, setTimeoutId] = useState(null as NodeJS.Timeout | null);
 
   useEffect(() => {
     service.loadPlaylists();
@@ -44,6 +45,15 @@ export function Playlists({
       service.removeAllListeners();
     };
   }, []);
+
+  useEffect(() => {
+    if (createPlaylistError !== "") {
+      setTimeoutId(setTimeout(() => setCreatePlaylistError(""), 3000));
+    } else if(timeoutId != null) {
+      clearTimeout(timeoutId);
+      setTimeoutId(null);
+    }
+  }, [createPlaylistError]);
 
   const createPlaylist = async () => {
     if (playlists.find((p) => p.playlistId === createPlaylistId) != null) {
@@ -78,7 +88,7 @@ export function Playlists({
           className="btn-2"
           type="button"
           onClick={() => onPlaylistSelected(p)}
-          onKeyPress={() => onPlaylistSelected(p)}
+          onKeyUp={() => onPlaylistSelected(p)}
           style={
             selectedPlaylist?.playlistId === p.playlistId
               ? { fontWeight: "bold" }
@@ -101,21 +111,18 @@ export function Playlists({
         >
           <FaPlus />
         </button>
-        <PlaylistSyncButtons />
+        {/* <PlaylistSyncButtons /> */}
       </div>
 
       {createPlaylistError && (
-        <div
-        // autoHideDuration={3000}
-        // onClose={() => setCreatePlaylistError("")}
-        >
+        <div className="flex gap-2 absolute bottom-4 left-1/2 p-2 bg-red-800 rounded">
           <span>{createPlaylistError}</span>
           <button
             aria-label="close"
             color="inherit"
             onClick={() => setCreatePlaylistError("")}
           >
-            <FaX size="small" />
+            <FaX />
           </button>
         </div>
       )}

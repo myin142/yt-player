@@ -1,3 +1,215 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
+:root {
+  --background: #232323;
+  --panel-background: #2e2e2e;
+  --light-background: #3f3f3f;
+  --front-border: #505050;
+  --main-text: #ffffff;
+  --disabled-text: #999999;
+}
+
+/* Default */
+
+body {
+  background-color: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body,
+button,
+a {
+  color: var(--main-text);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+ul,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+ul {
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+button {
+  background: none;
+  border: none;
+}
+
+button[disabled],
+.disabled {
+  color: var(--disabled-text);
+}
+
+/* Classes */
+
+.list-bordered > li {
+  border-bottom: 0.15rem solid var(--front-border);
+  padding: 0.5rem 1rem;
+}
+
+.pointer,
+button:not([disabled]) {
+  cursor: pointer;
+}
+
+.flex-horizontal {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-vertical {
+  display: flex;
+  flex-direction: column;
+}
+
+.gap {
+  gap: 1em;
+}
+
+.side-panel {
+  flex-basis: 15rem;
+  flex-shrink: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.btn-1,
+.btn-2 {
+  width: 100%;
+  text-align: left;
+}
+
+.btn-1:focus,
+.btn-2:focus {
+  box-shadow: 0 0 0.2rem var(--main-text);
+  outline: none;
+}
+
+.inner-panel,
+.btn-2 {
+  background-color: var(--light-background);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.btn-2[disabled] {
+  background-color: var(--panel-background);
+}
+
+.panel,
+.btn-1 {
+  background-color: var(--panel-background);
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.btn-1[disabled],
+.btn-1.disabled {
+  background-color: var(--background);
+}
+
+.thumbnail {
+  border-radius: 0.5rem;
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.scroll {
+  overflow-y: scroll;
+  flex-grow: 1;
+  flex-basis: 0;
+}
+
+.container {
+  display: flex;
+  flex-grow: 1;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 1em;
+}
+
+.main-padding {
+  padding: 0 1rem;
+}
+
+footer {
+  flex-basis: 5rem;
+  align-content: stretch;
+  display: flex;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 0.4rem;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--light-background);
+  border-radius: 1rem;
+}
+
+/* Specific, might be moved to separate files */
+
+/* Music Player*/
+.controls {
+  flex-grow: 1;
+}
+
+.controls > * {
+  display: inline-flex;
+  gap: 0.5em;
+  justify-content: center;
+}
+
+.playback {
+  flex-grow: 3;
+  justify-content: center;
+}
+
+.other-controls {
+  flex-grow: 1;
+}
+
+/* PlaylistVideoBlock */
+.video-block {
+  height: 5em;
+  align-items: center;
+  gap: 1em;
+  padding: 0.5em;
+}

@@ -124,15 +124,17 @@ export default function PlaylistVideos({
         {downloadedVideos.length > 0 && <ul>{downloadedVideos}</ul>}
       </div>
       {newVideos.length > 0 && (
-        <div>
-          <div className="font-bold">Not Downloaded Videos</div>
-          <button
-            title="Download al"
-            onClick={() => downloadAll()}
-            disabled={downloading}
-          >
-            <FaDownload />
-          </button>
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <div className="font-bold">Not Downloaded Videos</div>
+            <button
+              title="Download all"
+              onClick={() => downloadAll()}
+              disabled={downloading}
+            >
+              <FaDownload />
+            </button>
+          </div>
           <ul>{newVideos}</ul>
         </div>
       )}
