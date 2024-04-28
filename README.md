@@ -27,7 +27,11 @@ Youtube-dl is required for this application to work. (Might not work inside the 
 
 `pip install youtube-dl`
 
-MPD server and MPC command is required to play the music
+MPD server and MPC command is required to play the music.
+- MPD needs to be started as user: `systemctl --user start mpd`
+- Create a config in `~/.config/mpd/mpd.conf` with the following setting.
+
+`music_directory		"~/.config/yt-player-videos"`
 
 Download latest [release](https://github.com/myin142/yt-player/releases)
 

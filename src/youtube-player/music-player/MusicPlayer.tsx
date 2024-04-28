@@ -228,7 +228,7 @@ export function MusicPlayer(props: MusicPlayerProps) {
         />
       )} */}
       <div className="controls flex-vertical">
-        <FlexBox>
+        <FlexBox classes="!flex-row">
           {(isPlaying && (
             <button onClick={() => pause()}>
               <FaPause />
