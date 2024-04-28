@@ -10,6 +10,10 @@
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx ."
   },
+  "author": {
+    "email": "minyin142p@gmail.com",
+    "name": "myin"
+  },
   "license": "MIT",
   "keywords": [],
   "devDependencies": {
