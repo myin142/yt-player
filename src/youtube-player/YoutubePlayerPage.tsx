@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PlaylistQueue from "./playlists/PlaylistQueue";
 import { Playlists } from "./playlists/Playlists";
 import { PlaylistInfo, PlaylistVideo } from "./types";
@@ -8,159 +8,122 @@ import { QueueItem, Status } from "../services/mpd.service";
 import { PlaylistContext } from "./playlists/PlaylistContext";
 import { mpdService, videoService } from "./youtube/YoutubeContext";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface YoutubePlayerPageProps {}
+const youtubeService = new LocalYoutubeDlService();
 
-export interface YoutubePlayerPageState {
-  selectedPlaylist: PlaylistInfo | null;
-  playingPlaylist: PlaylistInfo | null;
-  playingVideo: PlaylistVideo | null;
-  loading: boolean;
-  videoChanged: boolean;
-  queue: QueueItem[];
-  dirtyQueue: boolean;
-  status: Status | null;
-}
+export default function YoutubePlayerPage() {
+  const [selectedPlaylist, setSelectedPlaylist] = useState(
+    null as PlaylistInfo | null
+  );
+  const [loading, setLoading] = useState(false);
+  const [queue, setQueue] = useState([] as QueueItem[]);
+  const [status, setStatus] = useState(null as Status | null);
 
-class YoutubePlayerPage extends React.Component<
-  YoutubePlayerPageProps,
-  YoutubePlayerPageState
-> {
-  static contextType = PlaylistContext;
+  const { service } = useContext(PlaylistContext);
 
-  private readonly youtubeService = new LocalYoutubeDlService();
+  useEffect(() => {
+    mpdService.update();
+    updateQueue();
+    updateStatus();
+    // updateStatus().then(() => updateQueue());
+    setInterval(() => updateStatus(), 3000);
+  }, [mpdService]);
 
-  private readonly videoService = videoService;
-
-  private readonly mpd = mpdService;
-
-  constructor(props: YoutubePlayerPageProps) {
-    super(props);
-    this.state = {
-      selectedPlaylist: null,
-      playingPlaylist: null,
-      playingVideo: null,
-      loading: false,
-      videoChanged: false,
-      queue: [],
-      dirtyQueue: false,
-      status: null,
-    };
-  }
-
-  async componentDidMount() {
-    await this.mpd.update();
-    await this.updateStatus();
-    await this.updateQueue();
-    setInterval(() => this.updateStatus(), 5000);
-  }
-
-  private async playSelectedPlaylist(video: PlaylistVideo) {
-    const { selectedPlaylist } = this.state;
-
-    if (!this.videoService.isVideoDownloaded(video.id)) {
+  const playSelectedPlaylist = async (video: PlaylistVideo) => {
+    if (!videoService.isVideoDownloaded(video.id)) {
       console.log("Video is not downloaded", video);
       return;
     }
 
     const videoIds = selectedPlaylist?.videos
-      .filter((v) => !v.disabled && this.videoService.isVideoDownloaded(v.id))
+      .filter((v) => !v.disabled && videoService.isVideoDownloaded(v.id))
       .map((v) => v.id);
 
     if (videoIds) {
       try {
-        await this.mpd.queuePlaylist(videoIds);
-        await this.mpd.play(video.id);
-        await this.updateStatus();
-        await this.updateQueue();
+        await mpdService.queuePlaylist(videoIds);
+        await mpdService.play(video.id);
+        await updateStatus();
+        await updateQueue();
       } catch (e) {
         console.log(e);
       }
     }
-  }
+  };
 
-  private async setShuffle(shuffle: boolean) {
-    await this.mpd.setShuffle(shuffle);
-    await this.updateStatus();
-  }
+  const setShuffle = async (shuffle: boolean) => {
+    await mpdService.setShuffle(shuffle);
+    await updateStatus();
+  };
 
-  private async playFromQueue(idx: number) {
-    await this.mpd.playFromQueue(idx);
-    await this.updateStatus();
-  }
+  const playFromQueue = async (idx: number) => {
+    await mpdService.playFromQueue(idx);
+    await updateStatus();
+  };
 
-  private async updateStatus() {
-    const status = await this.mpd.getStatus();
+  const updateStatus = async () => {
+    const status = await mpdService.getStatus();
     console.log("Updating status", status);
     if (status.state != null) {
-      this.setState({ status });
+      setStatus(status);
     } else {
-      this.setState({ status: null });
+      setStatus(null);
     }
-  }
+  };
 
-  private async updateQueue() {
-    const queue = await this.mpd.getQueue();
-    this.setState({ queue });
-  }
+  const updateQueue = async () => {
+    const queue = await mpdService.getQueue();
+    setQueue(queue);
+  };
 
-  updatePlaylistVideo(video: PlaylistVideo) {
-    const { selectedPlaylist } = this.state;
-    const playlist = selectedPlaylist;
+  // const updatePlaylistVideo = (video: PlaylistVideo) => {
+  //   const playlist = selectedPlaylist;
+  //   if (playlist == null) return;
 
-    if (playlist == null) return;
+  //   const currentVideos = playlist?.videos || [];
+  //   const index = currentVideos.findIndex((v) => v.id === video.id);
 
-    const currentVideos = playlist?.videos || [];
-    const index = currentVideos.findIndex((v) => v.id === video.id);
+  //   if (index !== -1) {
+  //     playlist.videos[index] = video;
+  //     updatePlaylist(playlist);
+  //   }
+  // };
 
-    if (index !== -1) {
-      playlist.videos[index] = video;
-      this.updatePlaylist(playlist);
-    }
-  }
-
-  updatePlaylist(playlist: Partial<PlaylistInfo>) {
-    const { selectedPlaylist } = this.state;
-
+  const updatePlaylist = (playlist: Partial<PlaylistInfo>) => {
     if (selectedPlaylist != null) {
       const updated = {
         ...selectedPlaylist,
         ...playlist,
       };
 
-      this.context.service.updatePlaylist(updated);
-      this.setState({
-        selectedPlaylist: updated,
-      });
+      service.updatePlaylist(updated);
+      setSelectedPlaylist(updated);
     }
-  }
+  };
 
-  private async loadPlaylistVideos(playlist = this.state.selectedPlaylist) {
+  const loadPlaylistVideos = async (playlist = selectedPlaylist) => {
     const playlistId = playlist?.playlistId;
-    const selectedPlaylist = playlist || this.state.selectedPlaylist;
+    const pl = playlist || selectedPlaylist;
     if (!playlistId) {
       console.log("Cannot load playlist videos without id");
       return;
     }
 
-    const { loading } = this.state;
     if (loading) {
       console.log("Already loading something");
       return;
     }
 
-    this.setState({ loading: true });
-
-    const info = await this.youtubeService.getPlaylistVideoInfos(playlistId);
+    setLoading(true);
+    const info = await youtubeService.getPlaylistVideoInfos(playlistId);
 
     // TODO: share with Playlists code
     if (info != null) {
-      const existingVideos = selectedPlaylist?.videos || [];
+      const existingVideos = pl?.videos || [];
       const mergedVideos: PlaylistVideo[] = [];
 
       info.entries.forEach((e) => {
         // Load thumbnail to cache earlier
-        this.youtubeService.getThumbnail(e.id);
+        youtubeService.getThumbnail(e.id);
 
         const entry: PlaylistVideo = {
           id: e.id,
@@ -178,64 +141,56 @@ class YoutubePlayerPage extends React.Component<
         }
       });
 
-      this.updatePlaylist({
-        ...selectedPlaylist,
+      updatePlaylist({
+        ...pl,
         playlistId,
         videos: mergedVideos,
         title: info.title,
       });
     }
 
-    this.setState({ loading: false });
-  }
+    setLoading(false);
+  };
 
-  render() {
-    const { selectedPlaylist, queue, status } = this.state;
-
-    return (
-      <>
-        <div className="flex grow p-4 gap-2">
-          <nav className="flex flex-col justify-between basis-80 gap">
-            <div className="panel scroll">
-              <Playlists
-                selectedPlaylist={selectedPlaylist}
-                onPlaylistSelected={(p) =>
-                  this.setState({ selectedPlaylist: p })
-                }
-              />
-            </div>
-          </nav>
-          <div className="main-container">
-            {selectedPlaylist && (
-              <MainPanel
-                selectedPlaylist={selectedPlaylist}
-                onPlay={(v) => this.playSelectedPlaylist(v)}
-                onReload={(p) => this.loadPlaylistVideos(p)}
-                onUpdateFolder={(p) => this.updatePlaylist(p)}
-              />
-            )}
+  return (
+    <>
+      <div className="flex grow p-4 gap-2">
+        <nav className="flex flex-col justify-between basis-80 gap">
+          <div className="panel scroll">
+            <Playlists
+              selectedPlaylist={selectedPlaylist}
+              onPlaylistSelected={(p) => setSelectedPlaylist(p)}
+            />
           </div>
-          {status && queue.length > 0 && (
-            <aside className="side-panel basis-80">
-              <div className="panel flex grow">
-                <PlaylistQueue
-                  queue={queue}
-                  status={status}
-                  onShuffle={(x) => this.setShuffle(x)}
-                  onPlayQueue={(i) => this.playFromQueue(i)}
-                />
-              </div>
-              <img
-                src={this.youtubeService.getThumbnail(status.playing)}
-                alt="Playing Video Thumbnail"
-                className="thumbnail"
-              />
-            </aside>
+        </nav>
+        <div className="main-container">
+          {selectedPlaylist && (
+            <MainPanel
+              selectedPlaylist={selectedPlaylist}
+              onPlay={(v) => playSelectedPlaylist(v)}
+              onReload={(p) => loadPlaylistVideos(p)}
+              onUpdateFolder={(p) => updatePlaylist(p)}
+            />
           )}
         </div>
-      </>
-    );
-  }
+        {status && queue.length > 0 && (
+          <aside className="side-panel basis-80">
+            <div className="panel flex grow">
+              <PlaylistQueue
+                queue={queue}
+                status={status}
+                onShuffle={(x) => setShuffle(x)}
+                onPlayQueue={(i) => playFromQueue(i)}
+              />
+            </div>
+            <img
+              src={youtubeService.getThumbnail(status.playing)}
+              alt="Playing Video Thumbnail"
+              className="thumbnail"
+            />
+          </aside>
+        )}
+      </div>
+    </>
+  );
 }
-
-export default YoutubePlayerPage;
