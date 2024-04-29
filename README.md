@@ -22,10 +22,15 @@ Features:
 
 ### Install
 
-Youtube-dl is required for this application to work. (Might not work inside the EU, cookie required for consent?)
+Youtube-dl (now yt-dlp) is required for this application to work. (Might not work inside the EU, cookie required for consent?)
+
 
 ```sh
-pip install youtube-dl
+pip install yt-dlp
+
+or
+
+pacman -S yt-dlp
 ```
 
 MPD server and MPC command is required to play the music.
