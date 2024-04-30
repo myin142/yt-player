@@ -44,6 +44,10 @@ export default function PlaylistControls({
     onSetVolume(internalVolume);
   }, [internalVolume]);
 
+  useEffect(() => {
+    setInternalVolume(status.volume);
+  }, [status]);
+
   return (
     <>
       <div className="flex gap-8">
