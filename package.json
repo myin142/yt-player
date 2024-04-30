@@ -1,6 +1,6 @@
 {
   "name": "yt-player",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Offline Youtube Playlist Music Player",
   "main": ".webpack/main",
   "scripts": {
