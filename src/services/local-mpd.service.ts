@@ -81,9 +81,6 @@ export class LocalMpdService implements MpdService {
         const parts = line.split("%")[0].split(":");
         if (parts.length > 1) {
           volume = parseInt(parts[1].trim());
-          if (isNaN(volume)) {
-            volume = 0;
-          }
         }
       }
     });

@@ -28,7 +28,9 @@ export default function PlaylistControls({
   onSetVolume,
 }: PlaylistControlsProps) {
   const [mutedVolume, setMutedVolume] = useState(50);
-  const [internalVolume, setInternalVolume] = useState(status.volume);
+  const [internalVolume, setInternalVolume] = useState(
+    isNaN(status.volume) ? 0 : status.volume
+  );
 
   const isMuted = internalVolume === 0;
   const toggleMute = () => {
@@ -45,7 +47,7 @@ export default function PlaylistControls({
   }, [internalVolume]);
 
   useEffect(() => {
-    setInternalVolume(status.volume);
+    if (!isNaN(status.volume)) setInternalVolume(status.volume);
   }, [status]);
 
   return (
