@@ -54,6 +54,10 @@ export class LocalMpdService implements MpdService {
     await this.mpc(["toggle"]);
   }
 
+  async setVolume(v: number): Promise<void> {
+    await this.mpc(["volume", `${v}`]);
+  }
+
   async getStatus(): Promise<Status> {
     const lines = await this.mpc(["status", "-f", "%file%"]);
     const queued = await this.mpc(["queued", "-f", "%file%"]);
@@ -62,6 +66,7 @@ export class LocalMpdService implements MpdService {
     let shuffle = false;
     let repeat = false;
     let playing = "";
+    let volume = 0;
     const nextPlaying = queued.length > 0 ? this.parseId(queued[0]) : "";
 
     lines.forEach((line, i) => {
@@ -72,6 +77,14 @@ export class LocalMpdService implements MpdService {
       } else if (line.startsWith("volume:")) {
         shuffle = line.includes("random: on");
         repeat = line.includes("repeat: on");
+
+        const parts = line.split("%")[0].split(":");
+        if (parts.length > 1) {
+          volume = parseInt(parts[1].trim());
+          if (isNaN(volume)) {
+            volume = 0;
+          }
+        }
       }
     });
 
@@ -81,6 +94,7 @@ export class LocalMpdService implements MpdService {
       repeat,
       playing,
       nextPlaying,
+      volume,
     };
   }
 

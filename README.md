@@ -10,7 +10,7 @@ Features:
     - [x] Play playlists to MPD server
     - [x] Toggle random
     - [x] Show active playing music
-    - [ ] Set volume
+    - [x] Set volume
     - [x] Play next queued music
     - [x] Queue / Play a selected music
     - [x] Play / Pause

@@ -12,6 +12,7 @@ export interface MpdService {
   playNext(): Promise<void>;
   playPrev(): Promise<void>;
   playToggle(): Promise<void>;
+  setVolume(v: number): Promise<void>;
 }
 
 export interface Status {
@@ -20,6 +21,7 @@ export interface Status {
   repeat: boolean;
   playing: string;
   nextPlaying: string;
+  volume: number;
 }
 
 export interface QueueItem {

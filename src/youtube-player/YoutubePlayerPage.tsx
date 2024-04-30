@@ -7,6 +7,8 @@ import { MainPanel } from "./MainPanel";
 import { QueueItem, Status } from "../services/mpd.service";
 import { PlaylistContext } from "./playlists/PlaylistContext";
 import { mpdService, videoService } from "./youtube/YoutubeContext";
+import _ from "lodash";
+import PlaylistControls from "./playlists/PlaylistControls";
 
 const youtubeService = new LocalYoutubeDlService();
 
@@ -75,6 +77,13 @@ export default function YoutubePlayerPage() {
     await updateStatus();
   };
 
+  const throttleSetVolume = _.throttle((v) => mpdService.setVolume(v), 100);
+  const debounceUpdateStatus = _.debounce(() => updateStatus(), 300);
+  const setVolume = async (v: number) => {
+    throttleSetVolume(v);
+    debounceUpdateStatus();
+  };
+
   const updateStatus = async () => {
     const status = await mpdService.getStatus();
     console.log("Updating status", status);
@@ -89,19 +98,6 @@ export default function YoutubePlayerPage() {
     const queue = await mpdService.getQueue();
     setQueue(queue);
   };
-
-  // const updatePlaylistVideo = (video: PlaylistVideo) => {
-  //   const playlist = selectedPlaylist;
-  //   if (playlist == null) return;
-
-  //   const currentVideos = playlist?.videos || [];
-  //   const index = currentVideos.findIndex((v) => v.id === video.id);
-
-  //   if (index !== -1) {
-  //     playlist.videos[index] = video;
-  //     updatePlaylist(playlist);
-  //   }
-  // };
 
   const updatePlaylist = (playlist: Partial<PlaylistInfo>) => {
     if (selectedPlaylist != null) {
@@ -190,15 +186,22 @@ export default function YoutubePlayerPage() {
         </div>
         {status && queue.length > 0 && (
           <aside className="side-panel basis-[36rem]">
-            <div className="panel flex grow">
-              <PlaylistQueue
-                queue={queue}
+            <div className="panel flex flex-col gap-4 grow">
+              <div className="flex flex-col grow">
+                <PlaylistQueue
+                  queue={queue}
+                  status={status}
+                  onPlayQueue={(i) => playFromQueue(i)}
+                />
+              </div>
+
+              <PlaylistControls
                 status={status}
                 onShuffle={(x) => setShuffle(x)}
-                onPlayQueue={(i) => playFromQueue(i)}
                 onPlayNext={() => playNext()}
                 onPlayPrev={() => playPrev()}
                 onPlayToggle={() => playToggle()}
+                onSetVolume={(v) => setVolume(v)}
               />
             </div>
             <div

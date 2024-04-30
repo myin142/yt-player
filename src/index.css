@@ -9,6 +9,7 @@
   --front-border: #505050;
   --main-text: #ffffff;
   --disabled-text: #999999;
+  --main-color: #ef4444;
 }
 
 /* Default */
@@ -63,6 +64,43 @@ button[disabled],
 .disabled {
   color: var(--disabled-text);
 }
+
+/* Input Range Style */
+
+input[type="range"] {
+  align-self: center;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+  @apply bg-red-500/25;
+  @apply rounded;
+
+  height: 0.25rem;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+
+  height: 0.75rem;
+  width: 0.75rem;
+  background-color: var(--main-text);
+  @apply rounded-lg;
+
+  transition: .2s ease-in-out;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 0 10px rgba(255,85,0, .1)
+}
+input[type="range"]:active::-webkit-slider-thumb {
+  box-shadow: 0 0 0 12px rgba(255,85,0, .2)
+}
+input[type="range"]:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 12px rgba(255,85,0, .2)
+}
+
 
 /* Classes */
 
