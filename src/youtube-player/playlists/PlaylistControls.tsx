@@ -52,7 +52,7 @@ export default function PlaylistControls({
 
   return (
     <>
-      <div className="flex gap-8">
+      <div className="flex gap-8 justify-between flex-row-reverse">
         <div className="flex gap-2">
           <button
             onClick={() => onShuffle(!status.shuffle)}
