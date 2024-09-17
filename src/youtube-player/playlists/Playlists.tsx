@@ -3,9 +3,11 @@ import { FaPlus, FaX } from "react-icons/fa6";
 import { PlaylistInfo } from "../types";
 import { PlaylistContext } from "./PlaylistContext";
 import { YoutubeContext } from "../youtube/YoutubeContext";
+import { MdVolumeUp } from "react-icons/md";
 
 export interface PlaylistsProps {
   selectedPlaylist: PlaylistInfo | null;
+  playingVideo: string | null;
   onPlaylistSelected: (i: PlaylistInfo | null) => void;
 }
 
@@ -19,8 +21,9 @@ export interface PlaylistsState {
 
 export function Playlists({
   selectedPlaylist,
+  playingVideo,
   onPlaylistSelected,
-}: PlaylistsProps) {
+}: Readonly<PlaylistsProps>) {
   const { service: ytService, videoService } = useContext(YoutubeContext);
   const { service } = useContext(PlaylistContext);
   const [playlists, setPlaylists] = useState([] as PlaylistInfo[]);
@@ -32,7 +35,9 @@ export function Playlists({
   useEffect(() => {
     service.loadPlaylists();
     service.addListener("playlistUpdated", (p: PlaylistInfo[]) => {
-      setPlaylists(p.sort((a, b) => a.title.localeCompare(b.title)));
+      p.sort((a, b) => a.title.localeCompare(b.title));
+
+      setPlaylists(p);
       setCreatePlaylistError("");
       setCreatePlaylistId("");
       setCreating(false);
@@ -54,11 +59,11 @@ export function Playlists({
 
   const selectPlaylist = (p: PlaylistInfo) => {
     if (p === selectedPlaylist) {
-      onPlaylistSelected(null)
+      onPlaylistSelected(null);
     } else {
       onPlaylistSelected(p);
     }
-  }
+  };
 
   const createPlaylist = async () => {
     if (playlists.find((p) => p.playlistId === createPlaylistId) != null) {
@@ -92,17 +97,22 @@ export function Playlists({
     );
     const isSelected = selectedPlaylist?.playlistId === p.playlistId;
     const noneDownloaded = downloadedVideos.length === 0;
+    const isPlaying = p.videos.find((v) => v.id === playingVideo) != null;
+
     return (
       <li key={i}>
         <button
           className={`p-2 rounded w-full flex gap-4 items-center justify-between ${
-            isSelected ? "bg-red-400" : ""
+            isSelected ? "bg-red-400" : isPlaying ? "text-red-500" : ""
           } ${noneDownloaded ? "opacity-50" : ""}`}
           type="button"
           onClick={() => selectPlaylist(p)}
           // onKeyUp={() => selectPlaylist(p)}
         >
-          <span>{p.title || "Not a playlist"}</span>
+          <span className="flex gap-2">
+            {p.title || "Not a playlist"}
+            {isPlaying && <MdVolumeUp className="text-xl" />}
+          </span>
           <span className="text-sm opacity-75">
             {downloadedVideos.length}/{p.videos.length}
           </span>

@@ -29,7 +29,7 @@ export default function PlaylistControls({
 }: PlaylistControlsProps) {
   const [mutedVolume, setMutedVolume] = useState(50);
   const [internalVolume, setInternalVolume] = useState(
-    isNaN(status.volume) ? 0 : status.volume
+    isNaN(status.volume) ? 50 : status.volume
   );
 
   const isMuted = internalVolume === 0;

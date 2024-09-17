@@ -123,11 +123,11 @@ export default class LocalYoutubeDlService implements YoutubeService {
       const names = lines
         .map((line) => {
           if (line.includes("Destination: ")) {
-            return line.substr(line.indexOf(location)).trim();
+            return line.substring(line.indexOf(location)).trim();
           }
 
           if (line.includes("has already been downloaded")) {
-            return line.substr(line.indexOf(location)).split("has")[0].trim();
+            return line.substring(line.indexOf(location)).split("has")[0].trim();
           }
           return null;
         })
@@ -136,7 +136,7 @@ export default class LocalYoutubeDlService implements YoutubeService {
           if (fullPath == null) return null;
           const parts = fullPath.split("/");
           return parts[parts.length - 1];
-        }) as string[];
+        });
 
       return { id, name: names[0] };
     } catch (err) {

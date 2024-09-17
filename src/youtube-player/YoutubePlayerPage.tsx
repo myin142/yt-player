@@ -164,57 +164,56 @@ export default function YoutubePlayerPage() {
   };
 
   return (
-    <>
-      <div className="flex grow p-4 gap-2">
-        <nav className="flex flex-col justify-between basis-80 gap">
-          <div className="panel scroll">
-            <Playlists
-              selectedPlaylist={selectedPlaylist}
-              onPlaylistSelected={(p) => setSelectedPlaylist(p)}
-            />
-          </div>
-        </nav>
-        <div className="flex flex-col grow gap-2">
-          {selectedPlaylist && (
-            <MainPanel
-              selectedPlaylist={selectedPlaylist}
-              onPlay={(v) => playSelectedPlaylist(v)}
-              onReload={(p) => loadPlaylistVideos(p)}
-              onUpdateFolder={(p) => updatePlaylist(p)}
-            />
-          )}
+    <div className="flex grow p-4 gap-2">
+      <nav className="flex flex-col justify-between basis-80 gap">
+        <div className="panel scroll">
+          <Playlists 
+            selectedPlaylist={selectedPlaylist}
+            playingVideo={queue.find((q) => q.id === status?.playing)?.id}
+            onPlaylistSelected={(p) => setSelectedPlaylist(p)}
+          />
         </div>
-        {status && queue.length > 0 && (
-          <aside className="side-panel basis-[36rem]">
-            <div className="panel flex flex-col gap-4 grow">
-              <div className="flex flex-col grow">
-                <PlaylistQueue
-                  queue={queue}
-                  status={status}
-                  onPlayQueue={(i) => playFromQueue(i)}
-                />
-              </div>
-
-              <PlaylistControls
-                status={status}
-                onShuffle={(x) => setShuffle(x)}
-                onPlayNext={() => playNext()}
-                onPlayPrev={() => playPrev()}
-                onPlayToggle={() => playToggle()}
-                onSetVolume={(v) => setVolume(v)}
-              />
-            </div>
-            <div
-              className="rounded w-full h-96 bg-cover bg-center"
-              style={{
-                backgroundImage: `url(${youtubeService.getThumbnail(
-                  status.playing
-                )})`,
-              }}
-            ></div>
-          </aside>
+      </nav>
+      <div className="flex flex-col grow gap-2">
+        {selectedPlaylist && (
+          <MainPanel
+            selectedPlaylist={selectedPlaylist}
+            onPlay={(v) => playSelectedPlaylist(v)}
+            onReload={(p) => loadPlaylistVideos(p)}
+            onUpdateFolder={(p) => updatePlaylist(p)}
+          />
         )}
       </div>
-    </>
+      {status && queue.length > 0 && (
+        <aside className="side-panel basis-[36rem]">
+          <div className="panel flex flex-col gap-4 grow">
+            <div className="flex flex-col grow">
+              <PlaylistQueue
+                queue={queue}
+                status={status}
+                onPlayQueue={(i) => playFromQueue(i)}
+              />
+            </div>
+
+            <PlaylistControls
+              status={status}
+              onShuffle={(x) => setShuffle(x)}
+              onPlayNext={() => playNext()}
+              onPlayPrev={() => playPrev()}
+              onPlayToggle={() => playToggle()}
+              onSetVolume={(v) => setVolume(v)}
+            />
+          </div>
+          <div
+            className="rounded w-full h-96 bg-cover bg-center"
+            style={{
+              backgroundImage: `url(${youtubeService.getThumbnail(
+                status.playing
+              )})`,
+            }}
+          ></div>
+        </aside>
+      )}
+    </div>
   );
 }
