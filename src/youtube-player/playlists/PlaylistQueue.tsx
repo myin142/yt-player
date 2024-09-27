@@ -1,16 +1,22 @@
 import { QueueItem, Status } from "../../services/mpd.service";
-import { MdOutlineSkipNext, MdVolumeUp } from "react-icons/md";
+import {
+  MdOutlineSkipNext,
+  MdVolumeUp,
+  MdArrowForwardIos,
+} from "react-icons/md";
 
 interface PlaylistQueueProps {
   status: Status;
   queue: QueueItem[];
   onPlayQueue: (idx: number) => void;
+  onCollapseToggle: () => void;
 }
 
 export default function PlaylistQueue({
   status,
   queue,
   onPlayQueue,
+  onCollapseToggle,
 }: PlaylistQueueProps) {
   const queueItems = queue.map((v, i) => {
     const isPlaying = v.id === status.playing;
@@ -34,7 +40,13 @@ export default function PlaylistQueue({
 
   return (
     <>
-      <div className="font-bold mb-4">Queue</div>
+      <button
+        className="font-bold mb-4 flex gap-2 items-center"
+        onClick={() => onCollapseToggle()}
+      >
+        <MdArrowForwardIos />
+        <span>Queue</span>
+      </button>
       <div className="scroll">
         <ul className="flex flex-col gap-4 grow">{queueItems}</ul>
       </div>

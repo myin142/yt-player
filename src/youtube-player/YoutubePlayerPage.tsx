@@ -9,6 +9,7 @@ import { PlaylistContext } from "./playlists/PlaylistContext";
 import { mpdService, videoService } from "./youtube/YoutubeContext";
 import _ from "lodash";
 import PlaylistControls from "./playlists/PlaylistControls";
+import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
 
 const youtubeService = new LocalYoutubeDlService();
 
@@ -19,6 +20,9 @@ export default function YoutubePlayerPage() {
   const [loading, setLoading] = useState(false);
   const [queue, setQueue] = useState([] as QueueItem[]);
   const [status, setStatus] = useState(null as Status | null);
+
+  const [queueCollapsed, setQueueCollapsed] = useState(false);
+  const [playlistCollapsed, setPlaylistCollapsed] = useState(false);
 
   const { service } = useContext(PlaylistContext);
 
@@ -165,15 +169,24 @@ export default function YoutubePlayerPage() {
 
   return (
     <div className="flex grow p-4 gap-2">
-      <nav className="flex flex-col justify-between basis-80 gap">
-        <div className="panel scroll">
-          <Playlists 
-            selectedPlaylist={selectedPlaylist}
-            playingVideo={queue.find((q) => q.id === status?.playing)?.id}
-            onPlaylistSelected={(p) => setSelectedPlaylist(p)}
-          />
-        </div>
-      </nav>
+      {(!playlistCollapsed && (
+        <nav className="flex flex-col justify-between basis-80 gap">
+          <div className="panel scroll">
+            <Playlists
+              selectedPlaylist={selectedPlaylist}
+              playingVideo={queue.find((q) => q.id === status?.playing)?.id}
+              onPlaylistSelected={(p) => setSelectedPlaylist(p)}
+              onCollapseToggle={() => setPlaylistCollapsed(!playlistCollapsed)}
+            />
+          </div>
+        </nav>
+      )) || (
+        <nav className="panel">
+          <button onClick={() => setPlaylistCollapsed(!playlistCollapsed)}>
+            <MdArrowForwardIos />
+          </button>
+        </nav>
+      )}
       <div className="flex flex-col grow gap-2">
         {selectedPlaylist && (
           <MainPanel
@@ -184,36 +197,45 @@ export default function YoutubePlayerPage() {
           />
         )}
       </div>
-      {status && queue.length > 0 && (
-        <aside className="side-panel basis-[36rem]">
-          <div className="panel flex flex-col gap-4 grow">
-            <div className="flex flex-col grow">
-              <PlaylistQueue
-                queue={queue}
+      {status &&
+        queue.length > 0 &&
+        ((!queueCollapsed && (
+          <aside className="side-panel basis-[36rem]">
+            <div className="panel flex flex-col gap-4 grow">
+              <div className="flex flex-col grow">
+                <PlaylistQueue
+                  queue={queue}
+                  status={status}
+                  onPlayQueue={(i) => playFromQueue(i)}
+                  onCollapseToggle={() => setQueueCollapsed(!queueCollapsed)}
+                />
+              </div>
+
+              <PlaylistControls
                 status={status}
-                onPlayQueue={(i) => playFromQueue(i)}
+                onShuffle={(x) => setShuffle(x)}
+                onPlayNext={() => playNext()}
+                onPlayPrev={() => playPrev()}
+                onPlayToggle={() => playToggle()}
+                onSetVolume={(v) => setVolume(v)}
               />
             </div>
-
-            <PlaylistControls
-              status={status}
-              onShuffle={(x) => setShuffle(x)}
-              onPlayNext={() => playNext()}
-              onPlayPrev={() => playPrev()}
-              onPlayToggle={() => playToggle()}
-              onSetVolume={(v) => setVolume(v)}
-            />
-          </div>
-          <div
-            className="rounded w-full h-96 bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${youtubeService.getThumbnail(
-                status.playing
-              )})`,
-            }}
-          ></div>
-        </aside>
-      )}
+            <div
+              className="rounded w-full h-96 bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${youtubeService.getThumbnail(
+                  status.playing
+                )})`,
+              }}
+            ></div>
+          </aside>
+        )) || (
+          <aside className="side-panel panel">
+            <button onClick={() => setQueueCollapsed(!queueCollapsed)}>
+              <MdArrowBackIos />
+            </button>
+          </aside>
+        ))}
     </div>
   );
 }

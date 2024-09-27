@@ -3,12 +3,13 @@ import { FaPlus, FaX } from "react-icons/fa6";
 import { PlaylistInfo } from "../types";
 import { PlaylistContext } from "./PlaylistContext";
 import { YoutubeContext } from "../youtube/YoutubeContext";
-import { MdVolumeUp } from "react-icons/md";
+import { MdArrowBackIos, MdVolumeUp } from "react-icons/md";
 
 export interface PlaylistsProps {
   selectedPlaylist: PlaylistInfo | null;
   playingVideo: string | null;
   onPlaylistSelected: (i: PlaylistInfo | null) => void;
+  onCollapseToggle: () => void;
 }
 
 export interface PlaylistsState {
@@ -23,6 +24,7 @@ export function Playlists({
   selectedPlaylist,
   playingVideo,
   onPlaylistSelected,
+  onCollapseToggle,
 }: Readonly<PlaylistsProps>) {
   const { service: ytService, videoService } = useContext(YoutubeContext);
   const { service } = useContext(PlaylistContext);
@@ -123,7 +125,13 @@ export function Playlists({
 
   return (
     <div className="flex flex-col" style={{ gap: "1em" }}>
-      <div className="font-bold">Playlists</div>
+      <button
+        className="font-bold flex items-center gap-2"
+        onClick={() => onCollapseToggle()}
+      >
+        <MdArrowBackIos />
+        <span>Playlists</span>
+      </button>
       <div className="flex gap-4">
         <input
           className="px-2 py w-full rounded bg-slate-600"
