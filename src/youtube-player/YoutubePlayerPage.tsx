@@ -171,7 +171,7 @@ export default function YoutubePlayerPage() {
     <div className="flex grow p-4 gap-2">
       {(!playlistCollapsed && (
         <nav className="flex flex-col justify-between basis-80 gap">
-          <div className="panel scroll">
+          <div className="panel flex grow items-stretch">
             <Playlists
               selectedPlaylist={selectedPlaylist}
               playingVideo={queue.find((q) => q.id === status?.playing)?.id}

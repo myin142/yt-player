@@ -124,7 +124,7 @@ export function Playlists({
   });
 
   return (
-    <div className="flex flex-col" style={{ gap: "1em" }}>
+    <div className="flex flex-col grow" style={{ gap: "1em" }}>
       <button
         className="font-bold flex items-center gap-2"
         onClick={() => onCollapseToggle()}
@@ -161,7 +161,7 @@ export function Playlists({
           </button>
         </div>
       )}
-      <ul>{playlistsList}</ul>
+      <ul className="scroll grow">{playlistsList}</ul>
     </div>
   );
 }
