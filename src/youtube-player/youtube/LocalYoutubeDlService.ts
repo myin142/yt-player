@@ -21,7 +21,7 @@ export default class LocalYoutubeDlService implements YoutubeService {
 
   private cacheThumbnail = _.debounce(() => {
     fs.outputJson(this.thumbnailCachePath, this.thumbnailCache);
-  }, 5000);
+  }, 2000);
 
   private cachePath = "";
   private loaded = false;
@@ -86,22 +86,62 @@ export default class LocalYoutubeDlService implements YoutubeService {
     // Thumbnail cache not loaded yet, download might not be required
     if (!this.loaded) return;
 
-    this.executeYoutubeDL(["--get-thumbnail", "--", id], (cmd) => {
-      this.thumbnailCmd[id] = cmd;
-    })
+    // Don't use high resolution image for thumbnails
+    const resolutionList = ["480", "360", "180"];
+    const notFound = "assets/not_found.png";
+
+    this.executeYoutubeDL(
+      ["--get-thumbnail", "--list-thumbnails", "--", id],
+      (cmd) => {
+        this.thumbnailCmd[id] = cmd;
+      }
+    )
       .then((urls) => {
-        const thumbnail = urls.length > 0 ? urls[0] : "";
+        // Fallback highres if no other resolution found
+        let thumbnail = urls.length > 1 ? urls[1] : notFound;
+
+        // "26 320     180     https://i.ytimg.com/vi/WtoTuv1HNHQ/mqdefault.jpg"
+        // "27 unknown unknown https://i.ytimg.com/vi_webp/WtoTuv1HNHQ/mqdefault.webp"
+        const list = urls[0].split("\n");
+        const items = list
+          .map((x) => x.split(" ").filter((x) => !!x))
+          .filter((x) => x.length >= 4)
+          .map((x) => {
+            const resolution = x[2].trim();
+            const url = x[3].trim();
+            return { resolution, url };
+          })
+          .filter((x) => resolutionList.includes(x.resolution))
+          .sort(
+            (a, b) =>
+              resolutionList.indexOf(a.resolution) -
+              resolutionList.indexOf(b.resolution)
+          );
+
+        if (items.length > 0) {
+          thumbnail = items[0].url;
+        }
+
         if (thumbnail) {
           this.thumbnailCache[id] = thumbnail;
         }
 
-        this.cacheThumbnail();
+        this.finishThumbnailDownload(id);
         return thumbnail;
       })
       .catch((err) => {
         console.log(err);
+        this.thumbnailCache[id] = notFound;
+        this.finishThumbnailDownload(id);
       });
     return "";
+  }
+
+  private finishThumbnailDownload(id: string) {
+    delete this.thumbnailCmd[id];
+    if (Object.keys(this.thumbnailCmd).length === 0) {
+      this.cacheThumbnail();
+    }
   }
 
   async downloadVideo({
@@ -127,7 +167,10 @@ export default class LocalYoutubeDlService implements YoutubeService {
           }
 
           if (line.includes("has already been downloaded")) {
-            return line.substring(line.indexOf(location)).split("has")[0].trim();
+            return line
+              .substring(line.indexOf(location))
+              .split("has")[0]
+              .trim();
           }
           return null;
         })
@@ -169,7 +212,7 @@ export default class LocalYoutubeDlService implements YoutubeService {
       cmd.stdout.on("data", (data: Buffer) => {
         const output = data.toString("utf-8");
         outputs.push(output);
-        console.log(output);
+        // console.log(output);
       });
 
       cmd.stderr.on("data", (err: Buffer) => {

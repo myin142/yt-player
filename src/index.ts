@@ -32,7 +32,7 @@ const createWindow = (): void => {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
-        "Content-Security-Policy": [`img-src https://*.ytimg.com`],
+        "Content-Security-Policy": [`img-src 'self' https://*.ytimg.com`],
       },
     });
   });
