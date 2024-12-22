@@ -9,6 +9,7 @@ import { PlaylistContext } from "./playlists/PlaylistContext";
 import { mpdService, videoService } from "./youtube/YoutubeContext";
 import PlaylistControls from "./playlists/PlaylistControls";
 import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
+import { spawn } from "child_process";
 import _ from "lodash";
 import fs from "fs";
 import path from "path";
@@ -171,8 +172,6 @@ export default function YoutubePlayerPage() {
   };
 
   const downloadPlaylistVideos = async (playlist: PlaylistInfo) => {
-    const paths = playlist.videos.filter(v => !v.disabled).map((v) => videoService.videoPath(v.id));
-
     // Currently just download from temp folder
     // Zip could be a bit complicated
     const tmpPath = path.join(os.tmpdir(), "yt-player-videos");
@@ -181,11 +180,15 @@ export default function YoutubePlayerPage() {
     }
     fs.mkdirSync(tmpPath);
 
-    paths.forEach((p) => {
-      const dest = path.join(tmpPath, path.basename(p));
-      console.log("Copying", p, dest);
-      fs.copyFileSync(p, dest);
-    });
+    playlist.videos
+      .filter((v) => !v.disabled)
+      .forEach(async (v) => {
+        const videoPath = videoService.videoPath(v.id);
+        const dest = path.join(tmpPath, `${v.title}.mp3`);
+
+        console.log("Copying", videoPath, dest);
+        spawn("ffmpeg", ["-i", videoPath, dest]);
+      });
   };
 
   return (
