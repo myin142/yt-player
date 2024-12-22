@@ -7,9 +7,12 @@ import { MainPanel } from "./MainPanel";
 import { QueueItem, Status } from "../services/mpd.service";
 import { PlaylistContext } from "./playlists/PlaylistContext";
 import { mpdService, videoService } from "./youtube/YoutubeContext";
-import _ from "lodash";
 import PlaylistControls from "./playlists/PlaylistControls";
 import { MdArrowBackIos, MdArrowForwardIos } from "react-icons/md";
+import _ from "lodash";
+import fs from "fs";
+import path from "path";
+import os from "os";
 
 const youtubeService = new LocalYoutubeDlService();
 
@@ -167,6 +170,24 @@ export default function YoutubePlayerPage() {
     setLoading(false);
   };
 
+  const downloadPlaylistVideos = async (playlist: PlaylistInfo) => {
+    const paths = playlist.videos.filter(v => !v.disabled).map((v) => videoService.videoPath(v.id));
+
+    // Currently just download from temp folder
+    // Zip could be a bit complicated
+    const tmpPath = path.join(os.tmpdir(), "yt-player-videos");
+    if (fs.existsSync(tmpPath)) {
+      fs.rmdirSync(tmpPath, { recursive: true });
+    }
+    fs.mkdirSync(tmpPath);
+
+    paths.forEach((p) => {
+      const dest = path.join(tmpPath, path.basename(p));
+      console.log("Copying", p, dest);
+      fs.copyFileSync(p, dest);
+    });
+  };
+
   return (
     <div className="flex grow p-4 gap-2">
       {(!playlistCollapsed && (
@@ -194,6 +215,7 @@ export default function YoutubePlayerPage() {
             onPlay={(v) => playSelectedPlaylist(v)}
             onReload={(p) => loadPlaylistVideos(p)}
             onUpdateFolder={(p) => updatePlaylist(p)}
+            onDownload={(p) => downloadPlaylistVideos(p)}
           />
         )}
       </div>

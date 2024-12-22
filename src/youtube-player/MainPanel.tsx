@@ -4,12 +4,14 @@ import React from "react";
 import IconToggle from "../components/IconToggle";
 import PlaylistVideos from "./playlists/PlaylistVideos";
 import { PlaylistInfo, PlaylistVideo } from "./types";
+import { FaDownload } from "react-icons/fa6";
 
 interface MainPanelProps {
   selectedPlaylist: PlaylistInfo;
   onReload: (p?: PlaylistInfo) => void;
   onPlay: (v: PlaylistVideo) => void;
   onUpdateFolder: (f: PlaylistInfo) => void;
+  onDownload: (v: PlaylistInfo) => void;
 }
 
 interface MainPanelState {
@@ -66,7 +68,7 @@ export class MainPanel extends React.Component<MainPanelProps, MainPanelState> {
   }
 
   render() {
-    const { selectedPlaylist, onReload, onPlay } = this.props;
+    const { selectedPlaylist, onReload, onPlay, onDownload } = this.props;
     const { editPlaylist } = this.state;
     const editMode = !!editPlaylist;
 
@@ -88,6 +90,9 @@ export class MainPanel extends React.Component<MainPanelProps, MainPanelState> {
                   title="Edit playlist videos"
                 >
                   <FaEdit />
+                </IconToggle>
+                <IconToggle title="Download" onClick={() => onDownload(selectedPlaylist)}>
+                  <FaDownload />
                 </IconToggle>
               </>
             )}
