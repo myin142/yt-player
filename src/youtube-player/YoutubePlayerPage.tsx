@@ -184,10 +184,13 @@ export default function YoutubePlayerPage() {
       .filter((v) => !v.disabled)
       .forEach(async (v) => {
         const videoPath = videoService.videoPath(v.id);
-        const dest = path.join(tmpPath, `${v.title}.mp3`);
+        const dest = path.join(tmpPath, `${v.title.replace("/", "-")}.mp3`);
 
         console.log("Copying", videoPath, dest);
-        spawn("ffmpeg", ["-i", videoPath, dest]);
+        const cmd = spawn("ffmpeg", ["-i", videoPath, dest]);
+        // cmd.stderr.on("data", (data) => {
+        //   console.log(data.toString());
+        // });
       });
   };
 
