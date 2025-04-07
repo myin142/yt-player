@@ -28,7 +28,23 @@ export default function YoutubePlayerPage() {
   const [queueCollapsed, setQueueCollapsed] = useState(false);
   const [playlistCollapsed, setPlaylistCollapsed] = useState(false);
 
-  const { service } = useContext(PlaylistContext);
+  const [currentMessage, setCurrentMessage] = useState("");
+  const [timer, setTimer] = useState(null as NodeJS.Timeout | null);
+
+  const { service, events } = useContext(PlaylistContext);
+
+  useEffect(() => {
+    events.notification = (msg) => {
+      setCurrentMessage(msg);
+      setTimer(setTimeout(() => setCurrentMessage(""), 3000));
+    };
+  }, []);
+
+  useEffect(() => {
+    if (currentMessage == "") {
+      setTimer(null);
+    }
+  }, [currentMessage]);
 
   useEffect(() => {
     mpdService.update();
@@ -195,75 +211,85 @@ export default function YoutubePlayerPage() {
   };
 
   return (
-    <div className="flex grow p-4 gap-2">
-      {(!playlistCollapsed && (
-        <nav className="flex flex-col justify-between basis-80 gap">
-          <div className="panel flex grow items-stretch">
-            <Playlists
-              selectedPlaylist={selectedPlaylist}
-              playingVideo={queue.find((q) => q.id === status?.playing)?.id}
-              onPlaylistSelected={(p) => setSelectedPlaylist(p)}
-              onCollapseToggle={() => setPlaylistCollapsed(!playlistCollapsed)}
-            />
-          </div>
-        </nav>
-      )) || (
-        <nav className="panel">
-          <button onClick={() => setPlaylistCollapsed(!playlistCollapsed)}>
-            <MdArrowForwardIos />
-          </button>
-        </nav>
-      )}
-      <div className="flex flex-col grow gap-2">
-        {selectedPlaylist && (
-          <MainPanel
-            selectedPlaylist={selectedPlaylist}
-            onPlay={(v) => playSelectedPlaylist(v)}
-            onReload={(p) => loadPlaylistVideos(p)}
-            onUpdateFolder={(p) => updatePlaylist(p)}
-            onDownload={(p) => downloadPlaylistVideos(p)}
-          />
-        )}
-      </div>
-      {status &&
-        queue.length > 0 &&
-        ((!queueCollapsed && (
-          <aside className="side-panel basis-[36rem]">
-            <div className="panel flex flex-col gap-4 grow">
-              <div className="flex flex-col grow">
-                <PlaylistQueue
-                  queue={queue}
-                  status={status}
-                  onPlayQueue={(i) => playFromQueue(i)}
-                  onCollapseToggle={() => setQueueCollapsed(!queueCollapsed)}
-                />
-              </div>
-
-              <PlaylistControls
-                status={status}
-                onShuffle={(x) => setShuffle(x)}
-                onPlayNext={() => playNext()}
-                onPlayPrev={() => playPrev()}
-                onPlayToggle={() => playToggle()}
-                onSetVolume={(v) => setVolume(v)}
+    <>
+      <div className="flex grow p-4 gap-2">
+        {(!playlistCollapsed && (
+          <nav className="flex flex-col justify-between basis-80 gap">
+            <div className="panel flex grow items-stretch">
+              <Playlists
+                selectedPlaylist={selectedPlaylist}
+                playingVideo={queue.find((q) => q.id === status?.playing)?.id}
+                onPlaylistSelected={(p) => setSelectedPlaylist(p)}
+                onCollapseToggle={() =>
+                  setPlaylistCollapsed(!playlistCollapsed)
+                }
               />
             </div>
-            <div
-              className="rounded w-full h-96 bg-cover bg-center"
-              style={{
-                backgroundImage: `url(${youtubeService.getThumbnail(
-                  status.playing
-                )})`,
-              }}
-            ></div>
-          </aside>
+          </nav>
         )) || (
-          <aside className="side-panel panel">
-            <button onClick={() => setQueueCollapsed(!queueCollapsed)}>
-              <MdArrowBackIos />
+          <nav className="panel">
+            <button onClick={() => setPlaylistCollapsed(!playlistCollapsed)}>
+              <MdArrowForwardIos />
             </button>
-          </aside>
-        ))}
-    </div>
+          </nav>
+        )}
+        <div className="flex flex-col grow gap-2">
+          {selectedPlaylist && (
+            <MainPanel
+              selectedPlaylist={selectedPlaylist}
+              onPlay={(v) => playSelectedPlaylist(v)}
+              onReload={(p) => loadPlaylistVideos(p)}
+              onUpdateFolder={(p) => updatePlaylist(p)}
+              onDownload={(p) => downloadPlaylistVideos(p)}
+            />
+          )}
+        </div>
+        {status &&
+          queue.length > 0 &&
+          ((!queueCollapsed && (
+            <aside className="side-panel basis-[36rem]">
+              <div className="panel flex flex-col gap-4 grow">
+                <div className="flex flex-col grow">
+                  <PlaylistQueue
+                    queue={queue}
+                    status={status}
+                    onPlayQueue={(i) => playFromQueue(i)}
+                    onCollapseToggle={() => setQueueCollapsed(!queueCollapsed)}
+                  />
+                </div>
+
+                <PlaylistControls
+                  status={status}
+                  onShuffle={(x) => setShuffle(x)}
+                  onPlayNext={() => playNext()}
+                  onPlayPrev={() => playPrev()}
+                  onPlayToggle={() => playToggle()}
+                  onSetVolume={(v) => setVolume(v)}
+                />
+              </div>
+              <div
+                className="rounded w-full h-96 bg-cover bg-center"
+                style={{
+                  backgroundImage: `url(${youtubeService.getThumbnail(
+                    status.playing
+                  )})`,
+                }}
+              ></div>
+            </aside>
+          )) || (
+            <aside className="side-panel panel">
+              <button onClick={() => setQueueCollapsed(!queueCollapsed)}>
+                <MdArrowBackIos />
+              </button>
+            </aside>
+          ))}
+      </div>
+
+      {currentMessage && (
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 bg-blue-500 text-white p-2 rounded mb-2">
+          {currentMessage}
+        </div>
+      )}
+    </>
   );
 }

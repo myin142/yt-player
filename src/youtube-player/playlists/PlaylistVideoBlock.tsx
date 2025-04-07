@@ -1,6 +1,7 @@
 import React, { MouseEventHandler, useContext } from "react";
 import { PlaylistVideo } from "../types";
 import { YoutubeContext } from "../youtube/YoutubeContext";
+import { PlaylistContext } from "./PlaylistContext";
 
 export interface PlaylistVideoBlockProps {
   playlistVideo: PlaylistVideo;
@@ -16,9 +17,17 @@ export function PlaylistVideoBlock({
   editing,
 }: PlaylistVideoBlockProps) {
   const { service } = useContext(YoutubeContext);
+  const { events } = useContext(PlaylistContext);
+
   let classes = "btn-1 flex video-block";
   if (disabled && editing) {
     classes += " disabled";
+  }
+
+  const copyLink = () => {
+    const link = `https://youtu.be/${playlistVideo.id}`;
+    navigator.clipboard.writeText(link);
+    events.notify(`Link copied: ${link}`);
   }
 
   return (
@@ -26,6 +35,7 @@ export function PlaylistVideoBlock({
       className={classes}
       type="button"
       onClick={onClick}
+      onContextMenu={e => copyLink()}
       disabled={disabled && !editing}
     >
       <div
